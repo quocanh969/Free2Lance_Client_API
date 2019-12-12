@@ -2,6 +2,7 @@ var express = require('express');
 var jwt = require('jsonwebtoken');
 var passport = require('passport');
 var userModel = require('../models/userModel');
+var majorModel = require('../models/majorModel');
 var router = express.Router();
 
 /* GET home page. */
@@ -10,7 +11,9 @@ router.get('/', function (req, res, next) {
 });
 
 router.get('/getList', function (req, res, next) {
-  userModel.getAll()
+  var body = req.body;
+  console.log(body);
+  userModel.getAll(body.key, body.value)
     .then((data) => {
       res.json(data);
     })
@@ -291,6 +294,32 @@ router.post('/register-tutor', (req, res) => {
     });
 
 });
+
+router.get('/getMajors', (req, res) => {
+  var user = req.body;
+
+  majorModel.getAll()
+    .then((data) => {
+      console.log("Majors returned:");
+      console.log(data);
+      res.json(data);
+    })
+    .catch((error) => {
+      res.end('Có lỗi');
+    });
+})
+
+router.get('/getTopMajors', (req, res) => {
+  majorModel.getTop()
+    .then((data) => {
+      console.log("Majors returned:");
+      console.log(data);
+      res.json(data);
+    })
+    .catch((error) => {
+      res.end('Có lỗi');
+    });
+})
 
 
 module.exports = router;

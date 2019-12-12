@@ -1,8 +1,10 @@
 var db = require('../utils/db');
 
 module.exports = {
-    getAll:() => {
-        return db.query('SELECT * FROM USERs');
+    getAll:(key, value) => {
+        if (key)
+            return db.query(`SELECT * FROM USERs WHERE ${key} LIKE ${value}`);
+        return db.query(`SELECT * FROM USERs`);
     },
     getByUsername:username => {
         return db.query(`SELECT * FROM USERs WHERE username = '${username}'`);
