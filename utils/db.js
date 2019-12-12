@@ -67,6 +67,38 @@ module.exports = {
             });
         });
     },
+    addFacebookUser: (user,role) => {
+        return new Promise((resolve, reject) => {
+            var sql = `INSERT INTO USERs(username, password, name, address, email, phone, yob, gender, role, avatarLink, status, accType, id_social)
+             VALUES('', '', '${user.name}', '', '${user.email}', '',${1980},${0},${role}, '${user.avatarLink}', ${true}, ${1}, '${user.id_social}')`;            
+            var connection = createConnection();
+            connection.connect();
+            connection.query(sql, (error, results) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve(results);
+                }
+                connection.end();
+            });
+        });
+    },
+    addGoogleUser: (user,role) => {
+        return new Promise((resolve, reject) => {
+            var sql = `INSERT INTO USERs(username, password, name, address, email, phone, yob, gender, role, avatarLink, status, accType, id_social)
+             VALUES('', '', '${user.name}', '', '${user.email}', '',${1980},${0},${role}, '${user.avatarLink}', ${true}, ${2}, '${user.id_social}')`;            
+            var connection = createConnection();
+            connection.connect();
+            connection.query(sql, (error, results) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve(results);
+                }
+                connection.end();
+            });
+        });
+    },
     addTutor: (user,id)=>{
         return new Promise((resolve, reject) => {
             var sql = `INSERT INTO TUTORs(id, price, major, subjectTeaching, levelTeaching, evaluation, successRate, areaCode, area, introduction)

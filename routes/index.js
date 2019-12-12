@@ -5,7 +5,7 @@ var userModel = require('../models/userModel');
 var router = express.Router();
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
+router.get('/', function (req, res, next) {
   res.json("Welcome to my world");
 });
 
@@ -40,21 +40,210 @@ router.post('/login', (req, res, next) => {
         }
 
 
-        let payload = { id: user.loginUser.id };
-        const token = jwt.sign(payload, '1612018_1612175');
-        return res.json({ user, token, info });
+        if (user.loginUser.role === req.body.role) {
+          let payload = { id: user.loginUser.id };
+          const token = jwt.sign(payload, '1612018_1612175');
+          return res.json({ user, token, info });
+
+        }
+        else {// Không cùng role
+          return res.json({
+            user: false,
+            info: {
+              message: 'Role is not corrected',
+              code: 2,
+            }
+          })
+        }
       });
     }
   })(req, next);
 });
+
+router.post('/login-facebook', (req, res) => {
+  let user = req.body;
+
+  userModel.getByFacebookId(user.id_social)
+    .then((data) => {
+      if (data.length > 0) { // đã tồn tại
+        let fbUser = data[0]
+        if (fbUser.role === req.body.role) {
+          let payload = { id: fbUser.id };
+          const token = jwt.sign(payload, '1612018_1612175');
+          return res.json({
+            user: fbUser,
+            token,
+            info: {
+              message: 'Logged in successfully',
+              code: 3
+            }
+          });
+        }
+        else {// Không cùng role
+          return res.json({
+            user: false,
+            info: {
+              message: 'Role is not corrected',
+              code: 2,
+            }
+          })
+        }
+      }
+      else { // Chưa tồn tại
+        // Tạo và thêm acc mới vào
+        userModel.addFacebookUser({
+          name: user.name,
+          id_social: user.id_social,
+          email: user.email,
+          avatarLink: user.avatarLink,
+        }, user.role)
+          .then(() => {
+            // Tạo thành công
+            // Tìm và trả về user tương ứng
+            userModel.getByFacebookId(user.id_social)
+              .then(data => {
+                let fbUser = data[0];
+                let payload = { id: fbUser.id };
+                console.log(fbUser.avatarLink);
+                const token = jwt.sign(payload, '1612018_1612175');
+                return res.json({
+                  user: fbUser,
+                  token,
+                  info: {
+                    message: 'Logged in successfully',
+                    code: 3
+                  }
+                });
+              })
+              .catch(error => {
+                return res.json({
+                  user: false,
+                  info: {
+                    message: 'Logged in fail 2',
+                    code: 0
+                  }
+                });
+              });
+          });
+
+
+      }
+
+
+    })
+    .catch((error) => { // Lỗi
+      return res.json({
+        user: false,
+        info: {
+          message: 'Logged in fail 1',
+          code: 0
+        }
+      });
+    });
+  /*
+  let payload = { id: user.loginUser.id };
+  const token = jwt.sign(payload, '1612018_1612175');
+  return res.json({ user, token, info });
+  */
+})
+
+
+router.post('/login-google', (req, res) => {
+  let user = req.body;
+
+  userModel.getByGoogleId(user.id_social)
+    .then((data) => {
+      if (data.length > 0) { // đã tồn tại
+        let ggUser = data[0]
+        if (ggUser.role === req.body.role) {
+          let payload = { id: ggUser.id };
+          const token = jwt.sign(payload, '1612018_1612175');
+          return res.json({
+            user: ggUser,
+            token,
+            info: {
+              message: 'Logged in successfully',
+              code: 3
+            }
+          });
+        }
+        else {// Không cùng role
+          return res.json({
+            user: false,
+            info: {
+              message: 'Role is not corrected',
+              code: 2,
+            }
+          })
+        }
+      }
+      else { // Chưa tồn tại
+        // Tạo và thêm acc mới vào
+        userModel.addGoogleUser({
+          name: user.name,
+          id_social: user.id_social,
+          email: user.email,
+          avatarLink: user.avatarLink,
+        }, user.role)
+          .then(() => {
+            // Tạo thành công
+            // Tìm và trả về user tương ứng
+            console.log(user);
+            userModel.getByGoogleId(user.id_social)
+              .then(data => {
+                console.log(data);
+                let ggUser = data[0];
+                let payload = { id: ggUser.id };
+                console.log(ggUser.avatarLink);
+                const token = jwt.sign(payload, '1612018_1612175');
+                return res.json({
+                  user: ggUser,
+                  token,
+                  info: {
+                    message: 'Logged in successfully',
+                    code: 3
+                  }
+                });
+              })
+              .catch(error => {
+                console.log(error);
+                return res.json({
+                  user: false,
+                  info: {
+                    message: 'Logged in fail 2',
+                    code: 0
+                  }
+                });
+              });
+          });
+
+
+      }
+
+    })
+    .catch((error) => { // Lỗi
+      return res.json({
+        user: false,
+        info: {
+          message: 'Logged in fail 1',
+          code: 0
+        }
+      });
+    });
+  /*
+  let payload = { id: user.loginUser.id };
+  const token = jwt.sign(payload, '1612018_1612175');
+  return res.json({ user, token, info });
+  */
+})
+
 
 router.post('/register-student', (req, res) => {
   var user = req.body;
 
   userModel.getByUsername(user.username)
     .then((data) => {
-      console.log("user");
-      console.log(user);
+
       if (data.length > 0) { // đã tồn tại
         res.json({ message: 'Username is existed', code: -1 });
       }
@@ -87,7 +276,7 @@ router.post('/register-tutor', (req, res) => {
       }
       else {
         userModel.register(user)
-          .then((responseData) => {            
+          .then((responseData) => {
             userModel.addTutor(user, responseData.id);
             res.json({ message: 'Register success !!!', code: 1 });
           })
