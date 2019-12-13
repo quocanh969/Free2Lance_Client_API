@@ -6,8 +6,8 @@ module.exports = {
             return db.query(`SELECT * FROM USERs WHERE ${key} LIKE ${value}`);
         return db.query(`SELECT * FROM USERs`);
     },
-    getByUsername:username => {
-        return db.query(`SELECT * FROM USERs WHERE username = '${username}'`);
+    getByEmail:email => {
+        return db.query(`SELECT * FROM USERs WHERE email = '${email}'`);
     },
     getByFacebookId:id=>{
         return db.query(`SELECT * FROM USERs WHERE accType = 1 AND id_social = '${id}'`);

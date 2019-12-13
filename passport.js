@@ -16,7 +16,7 @@ passport.use(new LocalStrategy(
     function (username, password, cb) {
         console.log("local login authenticate");
         console.log(username);
-        return userModel.getByUsername(username)
+        return userModel.getByEmail(username)
             .then((data) => {
                 if (data.length > 0) { // đã tồn tại
                     if (password === data[0].password) {                        
@@ -27,7 +27,7 @@ passport.use(new LocalStrategy(
                     }
                 }
                 else {
-                    return cb(null, false, { message: 'Wrong username', code: 0 });
+                    return cb(null, false, { message: 'Wrong email', code: 0 });
                 }
             })
             .catch((error) => {                

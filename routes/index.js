@@ -24,10 +24,16 @@ router.get('/getList', function (req, res, next) {
 
 
 router.post('/login', (req, res, next) => {
-
+  console.log(req.body);
   passport.authenticate('local', { session: false }, (err, user, info) => {
     if (user === false) {
-      res.json({ user, info })
+      res.json({ 
+        user, 
+        info:{
+          message:info.message,
+          code: 0,
+        } 
+      })
     }
     else {
       if (err || !user) {
@@ -243,8 +249,8 @@ router.post('/login-google', (req, res) => {
 
 router.post('/register-student', (req, res) => {
   var user = req.body;
-
-  userModel.getByUsername(user.username)
+  console.log(user);
+  userModel.getByEmail(user.email)
     .then((data) => {
 
       if (data.length > 0) { // đã tồn tại
@@ -261,7 +267,7 @@ router.post('/register-student', (req, res) => {
           });
       }
     })
-    .catch((error) => {
+    .catch((error) => {      
       res.end('Có lỗi');
     });
 
@@ -270,12 +276,12 @@ router.post('/register-student', (req, res) => {
 router.post('/register-tutor', (req, res) => {
   var user = req.body;
 
-  userModel.getByUsername(user.username)
+  userModel.getByEmail(user.email)
     .then((data) => {
       console.log("user");
       console.log(user);
       if (data.length > 0) { // đã tồn tại
-        res.json({ message: 'Username is existed', code: -1 });
+        res.json({ message: 'Email is existed', code: -1 });
       }
       else {
         userModel.register(user)
@@ -296,12 +302,9 @@ router.post('/register-tutor', (req, res) => {
 });
 
 router.get('/getMajors', (req, res) => {
-  var user = req.body;
-
   majorModel.getAll()
     .then((data) => {
-      console.log("Majors returned:");
-      console.log(data);
+      
       res.json(data);
     })
     .catch((error) => {
@@ -312,8 +315,6 @@ router.get('/getMajors', (req, res) => {
 router.get('/getTopMajors', (req, res) => {
   majorModel.getTop()
     .then((data) => {
-      console.log("Majors returned:");
-      console.log(data);
       res.json(data);
     })
     .catch((error) => {
