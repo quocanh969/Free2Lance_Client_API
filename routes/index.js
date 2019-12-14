@@ -24,16 +24,10 @@ router.get('/getList', function (req, res, next) {
 
 
 router.post('/login', (req, res, next) => {
-  console.log(req.body);
+  
   passport.authenticate('local', { session: false }, (err, user, info) => {
     if (user === false) {
-      res.json({ 
-        user, 
-        info:{
-          message:info.message,
-          code: 0,
-        } 
-      })
+      res.json({ user, info })
     }
     else {
       if (err || !user) {
@@ -49,210 +43,21 @@ router.post('/login', (req, res, next) => {
         }
 
 
-        if (user.loginUser.role === req.body.role) {
-          let payload = { id: user.loginUser.id };
-          const token = jwt.sign(payload, '1612018_1612175');
-          return res.json({ user, token, info });
-
-        }
-        else {// Không cùng role
-          return res.json({
-            user: false,
-            info: {
-              message: 'Role is not corrected',
-              code: 2,
-            }
-          })
-        }
+        let payload = { id: user.loginUser.id };
+        const token = jwt.sign(payload, '1612018_1612175');
+        return res.json({ user, token, info });
       });
     }
   })(req, next);
 });
 
-router.post('/login-facebook', (req, res) => {
-  let user = req.body;
-
-  userModel.getByFacebookId(user.id_social)
-    .then((data) => {
-      if (data.length > 0) { // đã tồn tại
-        let fbUser = data[0]
-        if (fbUser.role === req.body.role) {
-          let payload = { id: fbUser.id };
-          const token = jwt.sign(payload, '1612018_1612175');
-          return res.json({
-            user: fbUser,
-            token,
-            info: {
-              message: 'Logged in successfully',
-              code: 3
-            }
-          });
-        }
-        else {// Không cùng role
-          return res.json({
-            user: false,
-            info: {
-              message: 'Role is not corrected',
-              code: 2,
-            }
-          })
-        }
-      }
-      else { // Chưa tồn tại
-        // Tạo và thêm acc mới vào
-        userModel.addFacebookUser({
-          name: user.name,
-          id_social: user.id_social,
-          email: user.email,
-          avatarLink: user.avatarLink,
-        }, user.role)
-          .then(() => {
-            // Tạo thành công
-            // Tìm và trả về user tương ứng
-            userModel.getByFacebookId(user.id_social)
-              .then(data => {
-                let fbUser = data[0];
-                let payload = { id: fbUser.id };
-                console.log(fbUser.avatarLink);
-                const token = jwt.sign(payload, '1612018_1612175');
-                return res.json({
-                  user: fbUser,
-                  token,
-                  info: {
-                    message: 'Logged in successfully',
-                    code: 3
-                  }
-                });
-              })
-              .catch(error => {
-                return res.json({
-                  user: false,
-                  info: {
-                    message: 'Logged in fail 2',
-                    code: 0
-                  }
-                });
-              });
-          });
-
-
-      }
-
-
-    })
-    .catch((error) => { // Lỗi
-      return res.json({
-        user: false,
-        info: {
-          message: 'Logged in fail 1',
-          code: 0
-        }
-      });
-    });
-  /*
-  let payload = { id: user.loginUser.id };
-  const token = jwt.sign(payload, '1612018_1612175');
-  return res.json({ user, token, info });
-  */
-})
-
-
-router.post('/login-google', (req, res) => {
-  let user = req.body;
-
-  userModel.getByGoogleId(user.id_social)
-    .then((data) => {
-      if (data.length > 0) { // đã tồn tại
-        let ggUser = data[0]
-        if (ggUser.role === req.body.role) {
-          let payload = { id: ggUser.id };
-          const token = jwt.sign(payload, '1612018_1612175');
-          return res.json({
-            user: ggUser,
-            token,
-            info: {
-              message: 'Logged in successfully',
-              code: 3
-            }
-          });
-        }
-        else {// Không cùng role
-          return res.json({
-            user: false,
-            info: {
-              message: 'Role is not corrected',
-              code: 2,
-            }
-          })
-        }
-      }
-      else { // Chưa tồn tại
-        // Tạo và thêm acc mới vào
-        userModel.addGoogleUser({
-          name: user.name,
-          id_social: user.id_social,
-          email: user.email,
-          avatarLink: user.avatarLink,
-        }, user.role)
-          .then(() => {
-            // Tạo thành công
-            // Tìm và trả về user tương ứng
-            console.log(user);
-            userModel.getByGoogleId(user.id_social)
-              .then(data => {
-                console.log(data);
-                let ggUser = data[0];
-                let payload = { id: ggUser.id };
-                console.log(ggUser.avatarLink);
-                const token = jwt.sign(payload, '1612018_1612175');
-                return res.json({
-                  user: ggUser,
-                  token,
-                  info: {
-                    message: 'Logged in successfully',
-                    code: 3
-                  }
-                });
-              })
-              .catch(error => {
-                console.log(error);
-                return res.json({
-                  user: false,
-                  info: {
-                    message: 'Logged in fail 2',
-                    code: 0
-                  }
-                });
-              });
-          });
-
-
-      }
-
-    })
-    .catch((error) => { // Lỗi
-      return res.json({
-        user: false,
-        info: {
-          message: 'Logged in fail 1',
-          code: 0
-        }
-      });
-    });
-  /*
-  let payload = { id: user.loginUser.id };
-  const token = jwt.sign(payload, '1612018_1612175');
-  return res.json({ user, token, info });
-  */
-})
-
-
 router.post('/register-student', (req, res) => {
   var user = req.body;
-  console.log(user);
-  userModel.getByEmail(user.email)
-    .then((data) => {
 
+  userModel.getByUsername(user.username)
+    .then((data) => {
+      console.log("user");
+      console.log(user);
       if (data.length > 0) { // đã tồn tại
         res.json({ message: 'Username is existed', code: -1 });
       }
@@ -267,7 +72,7 @@ router.post('/register-student', (req, res) => {
           });
       }
     })
-    .catch((error) => {      
+    .catch((error) => {
       res.end('Có lỗi');
     });
 
@@ -276,12 +81,12 @@ router.post('/register-student', (req, res) => {
 router.post('/register-tutor', (req, res) => {
   var user = req.body;
 
-  userModel.getByEmail(user.email)
+  userModel.getByEmail(user.username)
     .then((data) => {
       console.log("user");
       console.log(user);
       if (data.length > 0) { // đã tồn tại
-        res.json({ message: 'Email is existed', code: -1 });
+        res.json({ message: 'Username is existed', code: -1 });
       }
       else {
         userModel.register(user)
@@ -302,9 +107,13 @@ router.post('/register-tutor', (req, res) => {
 });
 
 router.get('/getMajors', (req, res) => {
+  var user = req.body;
+
   majorModel.getAll()
     .then((data) => {
-      
+      console.log("Majors returned:");
+      console.log(data);
+      // const token = jwt.sign(payload, '1612018_1612175');
       res.json(data);
     })
     .catch((error) => {
@@ -315,6 +124,8 @@ router.get('/getMajors', (req, res) => {
 router.get('/getTopMajors', (req, res) => {
   majorModel.getTop()
     .then((data) => {
+      console.log("Majors returned:");
+      console.log(data);
       res.json(data);
     })
     .catch((error) => {
