@@ -11,7 +11,7 @@ const userModel = require('./models/userModel');
 passport.use(new LocalStrategy(
     {
         usernameField: 'username',
-        passwordField: 'password',        
+        passwordField: 'password',
     },
     function (username, password, cb) {
         console.log("local login authenticate");
@@ -19,7 +19,7 @@ passport.use(new LocalStrategy(
         return userModel.getByEmail(username)
             .then((data) => {
                 if (data.length > 0) { // đã tồn tại
-                    if (password === data[0].password) {                        
+                    if (password === data[0].password) {
                         return cb(null, { loginUser: data[0] }, { message: 'Logged in successfully', code: 3 });
                     }
                     else {
@@ -30,7 +30,7 @@ passport.use(new LocalStrategy(
                     return cb(null, false, { message: 'Wrong email', code: 0 });
                 }
             })
-            .catch((error) => {                
+            .catch((error) => {
                 return cb(error)
             });
     }
@@ -41,13 +41,16 @@ passport.use(new JWTStrategy(
         jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
         secretOrKey: '1612018_1612175',
     },
-    function (jwtPayload, cb){              
+    function (jwtPayload, cb) {
         return userModel.getByID(jwtPayload.id)
-            .then(user=>{                
-                return cb(null, user,{message: 'Authorized', code: 1 });
+            .then(user => {
+                if (user.length > 0)
+                    return cb(null, user[0], { message: 'Authorized', code: 1 });
+                else
+                    return cb(null, null, {message: 'Cannot get User', code: 0})
             })
-            .catch(err=>{                
-                return cb(err, null,{ message: 'Can not authorized', code: 0 });
+            .catch(err => {
+                return cb(err, null, { message: 'Can not authorized', code: 0 });
             });
     }
 ));

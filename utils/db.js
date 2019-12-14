@@ -14,11 +14,11 @@ var createConnection = () => {
         host: 'localhost',
         port: '3306',
         user: 'root',
-        password: '',
+        password: '30111998',
         database: 'uber_tutor_admin',
-        dateStrings: true,        
+        dateStrings: true,
         timezone: 'Z',
-        
+
         typeCast: function castField(field, useDefaultTypeCasting) {
 
             if ((field.type === "BIT") && (field.length === 1)) {
@@ -54,7 +54,7 @@ module.exports = {
     add: user => {
         return new Promise((resolve, reject) => {
             var sql = `INSERT INTO USERs( password, name, address, email, phone, yob, gender, role, avatarLink, status, accType, id_social)
-             VALUES('${user.password}', '${user.name}', '${user.address}', '${user.email}', '${user.phone}',${user.yob},${user.gender},${user.role}, '', ${false}, ${0}, '')`;            
+             VALUES('${user.password}', '${user.name}', '${user.address}', '${user.email}', '${user.phone}',${user.yob},${user.gender},${user.role}, '', ${true}, ${0}, '')`;
             var connection = createConnection();
             connection.connect();
             connection.query(sql, (error, results) => {
@@ -67,10 +67,10 @@ module.exports = {
             });
         });
     },
-    addFacebookUser: (user,role) => {
+    addFacebookUser: (user, role) => {
         return new Promise((resolve, reject) => {
             var sql = `INSERT INTO USERs(password, name, address, email, phone, yob, gender, role, avatarLink, status, accType, id_social)
-             VALUES('', '${user.name}', '', '${user.email}', '',${1980},${0},${role}, '${user.avatarLink}', ${true}, ${1}, '${user.id_social}')`;            
+             VALUES('', '${user.name}', '', '${user.email}', '',${1980},${0},${role}, '${user.avatarLink}', ${true}, ${1}, '${user.id_social}')`;
             var connection = createConnection();
             connection.connect();
             connection.query(sql, (error, results) => {
@@ -83,10 +83,10 @@ module.exports = {
             });
         });
     },
-    addGoogleUser: (user,role) => {
+    addGoogleUser: (user, role) => {
         return new Promise((resolve, reject) => {
             var sql = `INSERT INTO USERs( password, name, address, email, phone, yob, gender, role, avatarLink, status, accType, id_social)
-             VALUES('', '${user.name}', '', '${user.email}', '',${1980},${0},${role}, '${user.avatarLink}', ${true}, ${2}, '${user.id_social}')`;            
+             VALUES('', '${user.name}', '', '${user.email}', '${user.address}',${1980},${0},${role}, '${user.avatarLink}', ${true}, ${2}, '${user.id_social}')`;
             var connection = createConnection();
             connection.connect();
             connection.query(sql, (error, results) => {
@@ -99,10 +99,11 @@ module.exports = {
             });
         });
     },
-    addTutor: (user,id)=>{
+    addTutor: (user, id) => {
         return new Promise((resolve, reject) => {
+            console.log("This is id: " + id);
             var sql = `INSERT INTO TUTORs(id_user, price, major, subjectTeaching, levelTeaching, evaluation, successRate, areaCode, area, introduction)
-             VALUES('${id}', ${0}, '${user.major}', '',${user.levelTeaching}, ${0}, ${0},${0},'','')`;            
+             VALUES('${id}', ${0}, '${user.major}', '',${user.levelTeaching}, ${0}, ${0},${0},'','')`;
             var connection = createConnection();
             connection.connect();
             connection.query(sql, (error, results) => {
@@ -114,5 +115,20 @@ module.exports = {
                 connection.end();
             });
         });
+    },
+    getLearnerDetail: (id) => {
+        return new Promise((resolve, reject) => {
+            var sql = `select * from users as U where id = ${id};`;
+            var connection = createConnection();
+            connection.connect();
+            connection.query(sql, (error, results) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve(results);
+                }
+                connection.end();
+            });
+        })
     }
 }

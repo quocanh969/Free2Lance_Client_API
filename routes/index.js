@@ -27,12 +27,12 @@ router.post('/login', (req, res, next) => {
   console.log(req.body);
   passport.authenticate('local', { session: false }, (err, user, info) => {
     if (user === false) {
-      res.json({ 
-        user, 
-        info:{
-          message:info.message,
+      res.json({
+        user,
+        info: {
+          message: info.message,
           code: 0,
-        } 
+        }
       })
     }
     else {
@@ -47,9 +47,7 @@ router.post('/login', (req, res, next) => {
         if (err) {
           res.send(err);
         }
-
-
-        if (user.loginUser.role === req.body.role) {
+        if (user.loginUser.role === Number.parseInt(req.body.role)) {
           let payload = { id: user.loginUser.id };
           const token = jwt.sign(payload, '1612018_1612175');
           return res.json({ user, token, info });
@@ -267,7 +265,7 @@ router.post('/register-student', (req, res) => {
           });
       }
     })
-    .catch((error) => {      
+    .catch((error) => {
       res.end('Có lỗi');
     });
 
@@ -275,27 +273,33 @@ router.post('/register-student', (req, res) => {
 
 router.post('/register-tutor', (req, res) => {
   var user = req.body;
-
   userModel.getByEmail(user.email)
     .then((data) => {
-      console.log("user");
-      console.log(user);
       if (data.length > 0) { // đã tồn tại
         res.json({ message: 'Email is existed', code: -1 });
       }
       else {
         userModel.register(user)
           .then((responseData) => {
-            userModel.addTutor(user, responseData.id);
-            res.json({ message: 'Register success !!!', code: 1 });
+            console.log("This is response data");
+            console.log(responseData);
+            userModel.addTutor(user, responseData.insertId)
+              .then(data => {
+                res.json({ message: 'Register success !!!', code: 1 });
+              })
+              .catch((error) => {
+                console.log(error);
+                res.json({ message: 'Register fail !!!', code: 0, err: error });
+              });
           })
           .catch((error) => {
             console.log(error);
-            res.json({ message: 'Register fail !!!', code: 0 });
+            res.json({ message: 'Register fail !!!', code: 0, err: error });
           });
       }
     })
     .catch((error) => {
+      console.log(error);
       res.end('Có lỗi');
     });
 
@@ -304,7 +308,6 @@ router.post('/register-tutor', (req, res) => {
 router.get('/getMajors', (req, res) => {
   majorModel.getAll()
     .then((data) => {
-      
       res.json(data);
     })
     .catch((error) => {
