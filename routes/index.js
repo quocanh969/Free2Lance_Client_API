@@ -3,6 +3,8 @@ var jwt = require('jsonwebtoken');
 var passport = require('passport');
 var userModel = require('../models/userModel');
 var majorModel = require('../models/majorModel');
+var areaModel = require('../models/areaModel');
+
 var router = express.Router();
 
 /* GET home page. */
@@ -325,5 +327,15 @@ router.get('/getTopMajors', (req, res) => {
     });
 })
 
+router.get('/getAreas', (req, res) => {
+  areaModel.getAll()
+  .then(data => {
+    res.json(data);
+  })
+  .catch(err => {
+    console.log(err);
+    res.end(err);
+  })
+})
 
 module.exports = router;

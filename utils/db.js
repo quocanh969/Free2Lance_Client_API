@@ -102,8 +102,8 @@ module.exports = {
     addTutor: (user, id) => {
         return new Promise((resolve, reject) => {
             console.log("This is id: " + id);
-            var sql = `INSERT INTO TUTORs(id_user, price, major, subjectTeaching, levelTeaching, evaluation, successRate, areaCode, area, introduction)
-             VALUES('${id}', ${0}, '${user.major}', '',${user.levelTeaching}, ${0}, ${0},${0},'','')`;
+            var sql = `INSERT INTO TUTORs(id_user, price, major, levelTeaching, evaluation, successRate, areaCode, area, introduction)
+             VALUES('${id}', ${0}, '${user.major}',${user.levelTeaching}, ${0}, ${0},${0},'','')`;
             var connection = createConnection();
             connection.connect();
             connection.query(sql, (error, results) => {
