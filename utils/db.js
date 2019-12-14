@@ -118,7 +118,7 @@ module.exports = {
     },
     getLearnerDetail: (id) => {
         return new Promise((resolve, reject) => {
-            var sql = `select * from users as U where id = ${id};`;
+            var sql = `select * from users as U where id = ${id} and status=${true}`;
             var connection = createConnection();
             connection.connect();
             connection.query(sql, (error, results) => {
