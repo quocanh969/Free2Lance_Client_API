@@ -27,6 +27,24 @@ router.get('/getLearnerDetail', function (req, res, next) {
   }
 });
 
+router.get('/getTutorDetail', function (req, res, next) {
+  var curUser = JSON.stringify(req.user);
+  if (JSON.parse(curUser).id === Number.parseInt(req.body.id)) {
+    userModel.getTutorDetail(req.body.id)
+      .then(data => {
+        const payload = { id: req.body.id };
+        let token = jwt.sign(payload, '1612018_1612175');
+        res.json({ data, token });
+      }).catch(err => {
+        console.log(err);
+        res.json(err);
+      })
+  }
+  else {
+    res.json("Don't try to poke your head into other's privacy pls :(");
+  }
+});
+
 router.put('/editPersonalInfo', function (req, res, next) {
   var curUser = JSON.stringify(req.user);
   console.log(req.body.id);
