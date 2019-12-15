@@ -130,5 +130,21 @@ module.exports = {
                 connection.end();
             });
         })
+    },
+    updateBasicInfo: (id, info) => {
+        return new Promise((resolve, reject) => {
+            var sql = `update users set name = '${info.name}', address = '${info.address}', phone = '${info.phone}', yob = '${info.yob}', avatarLink = '${info.avatarLink}'
+                    where id = ${id}`;
+            var connection = createConnection();
+            connection.connect();
+            connection.query(sql, (error, results) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve(results);
+                }
+                connection.end();
+            });
+        })
     }
 }

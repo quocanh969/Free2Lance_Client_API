@@ -36,4 +36,7 @@ module.exports = {
     getByID: (id) => {
         return db.query(`select * from users where id = ${id} and status=${true}`);
     },
+    updateBasicInfo: (id, info) => {
+        return db.updateBasicInfo(id, info);
+    }
 }
