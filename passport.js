@@ -73,3 +73,22 @@ passport.use('EditPersonalInfo', new JWTStrategy(
         })
     },
 ));
+
+passport.use('EditProfessionalInfo', new JWTStrategy(
+    {
+        jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
+        secretOrKey: '1612018_1612175',
+        passReqToCallback: true,
+    },
+    function (req, token, done) {
+        var info = req.body;
+        console.log(info);
+        console.log(token);
+        return userModel.updateProfessionalInfo(token.id, info)
+        .then(result => {
+            return done({message: 'Edit successful', code: 1, result});
+        }).catch(err => {
+            return done({message: err, code: 0});
+        })
+    },
+));

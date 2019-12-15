@@ -38,5 +38,8 @@ module.exports = {
     },
     updateBasicInfo: (id, info) => {
         return db.updateBasicInfo(id, info);
+    },
+    updateProfessionalInfo: (id, info) => {
+        return db.updateProfessionalInfo(id, info);
     }
 }

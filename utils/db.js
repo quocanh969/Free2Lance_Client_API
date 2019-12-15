@@ -146,5 +146,21 @@ module.exports = {
                 connection.end();
             });
         })
+    },
+    updateProfessionalInfo: (id, info) => {
+        return new Promise((resolve, reject) => {
+            var sql = `update tutors set price = ${info.price}, major = ${info.major}, levelTeaching = ${info.levelTeaching}, introduction = '${info.introduction}', areaCode = ${info.areaCode}
+                    where id_user = ${id}`;
+            var connection = createConnection();
+            connection.connect();
+            connection.query(sql, (error, results) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve(results);
+                }
+                connection.end();
+            });
+        })
     }
 }
