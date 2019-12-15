@@ -51,11 +51,23 @@ router.put('/editPersonalInfo', function (req, res, next) {
   console.log(JSON.parse(curUser).id);
   var body = req.body;
   if (JSON.parse(curUser).id === Number.parseInt(req.body.id)) {
-    userModel.updateBasicInfo(body.id, body)
-      .then(data => {
-        const payload = { id: body.id };
-        let token = jwt.sign(payload, '1612018_1612175');
-        res.json({ data, token, message: "edit successful" });
+    userModel.getLearnerDetail(body.id)
+      .then(responseData => {
+        var temp = JSON.stringify(responseData);
+        console.log(responseData[0].name);
+        console.log("body name: " + body.name);
+        if (body.name === null || body.name === undefined || body.name === '') body.name = responseData[0].name;
+        console.log(body.name);
+        userModel.updateBasicInfo(body.id, body)
+          .then(data => {
+            console.log(body.name);
+            const payload = { id: body.id };
+            let token = jwt.sign(payload, '1612018_1612175');
+            res.json({ responseData, data, token, message: "edit successful" });
+          })
+          .catch(err => {
+            res.json(err);
+          })
       }).catch(err => {
         console.log(err);
         res.json(err);
