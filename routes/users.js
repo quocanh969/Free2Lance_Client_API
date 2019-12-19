@@ -63,7 +63,7 @@ router.put('/editPersonalInfo', function (req, res, next) {
             console.log(body.name);
             const payload = { id: body.id };
             let token = jwt.sign(payload, '1612018_1612175');
-            res.json({ responseData, data, token, message: "edit successful" });
+            res.json({ responseData, data, token, message: "edit successful", isEditting: false, });
           })
           .catch(err => {
             res.json(err);
@@ -88,7 +88,7 @@ router.put('/editProfessionalInfo', function (req, res, next) {
       .then(data => {
         const payload = { id: body.id };
         let token = jwt.sign(payload, '1612018_1612175');
-        res.json({ data, token, message: "edit successful" });
+        res.json({ data, token, message: "edit successful", isEditting: false, });
       }).catch(err => {
         console.log(err);
         res.json(err);
