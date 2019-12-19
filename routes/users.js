@@ -117,7 +117,7 @@ router.put('/changePassword', function (req, res, next) {
         var oldPassword = responseData[0].password;
         if (body.newPassword !== null && body.newPassword !== undefined && body.newPassword !== '') {
           if (body.oldPassword !== oldPassword || body.newPassword !== body.reconfirmPassword) {
-            res.json({ message: "Old password does not match/ reconfirmed password does not match" });
+            res.json({ message: "Old password does not match/ reconfirmed password does not match", isEditting: false, });
           } else {
             userModel.updatePassword(body.id, body)
               .then(data => {
