@@ -53,10 +53,10 @@ router.put('/editPersonalInfo', function (req, res, next) {
   if (JSON.parse(curUser).id === Number.parseInt(req.body.id)) {
     userModel.getLearnerDetail(body.id)
       .then(responseData => {
-        var temp = JSON.stringify(responseData);
-        console.log(responseData[0].name);
-        console.log("body name: " + body.name);
         if (body.name === null || body.name === undefined || body.name === '') body.name = responseData[0].name;
+        if (body.avatarLink === null || body.avatarLink === undefined || body.avatarLink === '') body.avatarLink = responseData[0].avatarLink;
+        if (body.address === null || body.address === undefined || body.address === '') body.address = responseData[0].address;
+        if (body.yob === null || body.yob === undefined || body.yob === '') body.yob = responseData[0].yob;
         console.log(body.name);
         userModel.updateBasicInfo(body.id, body)
           .then(data => {
@@ -89,6 +89,44 @@ router.put('/editProfessionalInfo', function (req, res, next) {
         const payload = { id: body.id };
         let token = jwt.sign(payload, '1612018_1612175');
         res.json({ data, token, message: "edit successful", isEditting: false, });
+      }).catch(err => {
+        console.log(err);
+        res.json(err);
+      })
+  }
+  else {
+    res.json(`Don't meddle with others' privacy`);
+  }
+})
+
+router.put('/changePassword', function (req, res, next) {
+  var curUser = JSON.stringify(req.user);
+  var body = req.body;
+  // console.log(req.body.id);
+  // console.log(JSON.parse(curUser).id);
+  if (JSON.parse(curUser).id === Number.parseInt(req.body.id)) {
+    userModel.getLearnerDetail(body.id)
+      .then(responseData => {
+        console.log("Old password " + responseData[0].password);
+        var oldPassword = responseData[0].password;
+        if (body.newPassword !== null && body.newPassword !== undefined && body.newPassword !== '') {
+          if (body.oldPassword !== oldPassword || body.newPassword !== body.reconfirmPassword) {
+            res.json({message: "Old password does not match/ reconfirmed password does not match"});
+          } else {
+            userModel.updatePassword(body.id, body)
+              .then(data => {
+                console.log(body.name);
+                const payload = { id: body.id };
+                let token = jwt.sign(payload, '1612018_1612175');
+                res.json({ responseData, data, token, message: "Change password successful", isEditting: false, });
+              })
+              .catch(err => {
+                res.json(err);
+              })
+          }
+        } else {
+          res.json({isEditting: false, message: "No new password input!"});
+        }
       }).catch(err => {
         console.log(err);
         res.json(err);

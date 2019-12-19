@@ -41,5 +41,8 @@ module.exports = {
     },
     updateProfessionalInfo: (id, info) => {
         return db.updateProfessionalInfo(id, info);
+    },
+    updatePassword: (id, password) => {
+        return db.updatePassword(id, password);
     }
 }

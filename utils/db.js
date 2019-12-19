@@ -180,5 +180,20 @@ module.exports = {
                 connection.end();
             });
         })
-    }
+    },
+    updatePassword: (id, password) => {
+        return new Promise((resolve, reject) => {
+            var sql = `update users set password = '${password.newPassword}' where id = ${id}`;
+            var connection = createConnection();
+            connection.connect();
+            connection.query(sql, (error, results) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve(results);
+                }
+                connection.end();
+            });
+        });
+    },
 }
