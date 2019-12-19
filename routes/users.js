@@ -71,7 +71,7 @@ router.put('/editPersonalInfo', function (req, res, next) {
             console.log(body.name);
             const payload = { id: body.id };
             let token = jwt.sign(payload, '1612018_1612175');
-            res.json({ responseData, data, token, message: "edit successful", isEditting: false, });
+            res.json({ responseData, data, token, message: "edit successful", });
           })
           .catch(err => {
             res.json(err);
@@ -96,7 +96,7 @@ router.put('/editProfessionalInfo', function (req, res, next) {
       .then(data => {
         const payload = { id: body.id };
         let token = jwt.sign(payload, '1612018_1612175');
-        res.json({ data, token, message: "edit successful", isEditting: false, });
+        res.json({ data, token, message: "edit successful", });
       }).catch(err => {
         console.log(err);
         res.json(err);
@@ -117,14 +117,14 @@ router.put('/changePassword', function (req, res, next) {
         var oldPassword = responseData[0].password;
         if (body.newPassword !== null && body.newPassword !== undefined && body.newPassword !== '') {
           if (body.oldPassword !== oldPassword || body.newPassword !== body.reconfirmPassword) {
-            res.json({ message: "Old password does not match/ reconfirmed password does not match", isEditting: false, });
+            res.json({ message: "Old password does not match/ reconfirmed password does not match", });
           } else {
             userModel.updatePassword(body.id, body)
               .then(data => {
                 console.log(body.name);
                 const payload = { id: body.id };
                 let token = jwt.sign(payload, '1612018_1612175');
-                res.json({ responseData, data, token, message: "Change password successful", isEditting: false, });
+                res.json({ responseData, data, token, message: "Change password successful", });
               })
               .catch(err => {
                 res.json(err);

@@ -152,7 +152,7 @@ module.exports = {
     },
     updateBasicInfo: (id, info) => {
         return new Promise((resolve, reject) => {
-            var sql = `update users set name = '${info.name}', address = '${info.address}', phone = '${info.phone}', yob = '${info.yob}', avatarLink = '${info.avatarLink}'
+            var sql = `update users set name = '${info.name}', address = '${info.address}', phone = '${info.phone}', yob = '${info.yob}', avatarLink = '${info.avatarLink}', isEditting = ${false}
                     where id = ${id}`;
             var connection = createConnection();
             connection.connect();
@@ -168,7 +168,7 @@ module.exports = {
     },
     updateProfessionalInfo: (id, info) => {
         return new Promise((resolve, reject) => {
-            var sql = `update tutors set price = ${info.price}, major = ${info.major}, levelTeaching = ${info.levelTeaching}, introduction = '${info.introduction}', areaCode = ${info.areaCode}
+            var sql = `update tutors set price = ${info.price}, major = ${info.major}, levelTeaching = ${info.levelTeaching}, introduction = '${info.introduction}', areaCode = ${info.areaCode}, isEditting = ${false}
                     where id_user = ${id}`;
             var connection = createConnection();
             connection.connect();
@@ -184,7 +184,7 @@ module.exports = {
     },
     updatePassword: (id, password) => {
         return new Promise((resolve, reject) => {
-            var sql = `update users set password = '${password.newPassword}' where id = ${id}`;
+            var sql = `update users set password = '${password.newPassword}', isEditting = ${false} where id = ${id}`;
             var connection = createConnection();
             connection.connect();
             connection.query(sql, (error, results) => {
