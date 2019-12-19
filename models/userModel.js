@@ -33,6 +33,10 @@ module.exports = {
     getTutorDetail: (id) => {
         return db.getTutorDetail(id);
     },
+    getTutorSkills: (id) => {
+        return db.query(`select ST.skill_code, S.skill_tag, S.skill from skill_table as ST, skills as S 
+                        where ST.id_teacher = ${id} and ST.skill_code = S.id_skill and S.status = ${1}`);
+    },
     getByID: (id) => {
         return db.query(`select * from users where id = ${id} and status=${true}`);
     },

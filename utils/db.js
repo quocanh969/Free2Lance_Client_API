@@ -134,9 +134,10 @@ module.exports = {
     getTutorDetail: (id) => {
         return new Promise((resolve, reject) => {
             var sql = `select U.id, U.name, U.role, U.address, U.email, U.phone, U.gender, U.yob, U.avatarLink, 
-                    T.price, T.levelTeaching, T.major, M.name as majorName, T.evaluation, T.successRate, T.areaCode, A.area 
-                    from users as U, tutors as T, majors as M, areas as A  
-                    where U.id = ${id} and U.status=${true} and U.id = T.id_user and T.major = M.id and A.id_area = T.areaCode and U.role = ${1}`;
+            T.price, T.levelTeaching, T.major, M.name, T.evaluation, T.successRate, T.areaCode, A.area
+            from users as U, tutors as T, majors as M, areas as A  
+            where U.id = T.id_user and T.major = M.id and A.id_area = T.areaCode and 
+            U.id = ${id} and U.role = ${1}`;
             var connection = createConnection();
             connection.connect();
             connection.query(sql, (error, results) => {

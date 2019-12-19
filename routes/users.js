@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 var userModel = require('../models/userModel');
 var jwt = require('jsonwebtoken');
-var passport = require('passport')
+var passport = require('passport');
 
 /* GET users listing. */
 router.get('/', function (req, res, next) {
@@ -32,9 +32,17 @@ router.get('/getTutorDetail', function (req, res, next) {
   if (JSON.parse(curUser).id === Number.parseInt(req.body.id)) {
     userModel.getTutorDetail(req.body.id)
       .then(data => {
-        const payload = { id: req.body.id };
-        let token = jwt.sign(payload, '1612018_1612175');
-        res.json({ data, token });
+        userModel.getTutorSkills(req.body.id)
+          .then(skills => {
+            // var userData = data[0];
+            const payload = { id: req.body.id };
+            let token = jwt.sign(payload, '1612018_1612175');
+            res.json({ data: data[0], skills , token });
+          })
+          .catch(err => {
+            console.log(err);
+            res.json(err);
+          })
       }).catch(err => {
         console.log(err);
         res.json(err);
@@ -102,8 +110,6 @@ router.put('/editProfessionalInfo', function (req, res, next) {
 router.put('/changePassword', function (req, res, next) {
   var curUser = JSON.stringify(req.user);
   var body = req.body;
-  // console.log(req.body.id);
-  // console.log(JSON.parse(curUser).id);
   if (JSON.parse(curUser).id === Number.parseInt(req.body.id)) {
     userModel.getLearnerDetail(body.id)
       .then(responseData => {
@@ -111,7 +117,7 @@ router.put('/changePassword', function (req, res, next) {
         var oldPassword = responseData[0].password;
         if (body.newPassword !== null && body.newPassword !== undefined && body.newPassword !== '') {
           if (body.oldPassword !== oldPassword || body.newPassword !== body.reconfirmPassword) {
-            res.json({message: "Old password does not match/ reconfirmed password does not match"});
+            res.json({ message: "Old password does not match/ reconfirmed password does not match" });
           } else {
             userModel.updatePassword(body.id, body)
               .then(data => {
@@ -125,7 +131,7 @@ router.put('/changePassword', function (req, res, next) {
               })
           }
         } else {
-          res.json({isEditting: false, message: "No new password input!"});
+          res.json({ isEditting: false, message: "No new password input!" });
         }
       }).catch(err => {
         console.log(err);
