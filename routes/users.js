@@ -16,10 +16,24 @@ router.get('/getLearnerDetail', function (req, res, next) {
       .then(data => {
         const payload = { id: req.body.id };
         let token = jwt.sign(payload, '1612018_1612175');
-        res.json({ data, token });
+        res.json({
+          code: 1,
+          info: {
+            data,
+            token,
+            message: "Get successfully"
+          }
+        });
       }).catch(err => {
         console.log(err);
-        res.json(err);
+        res.json({
+          code: 0,
+          info: {
+            data: null,
+            token: null,
+            message: err,
+          }
+        })
       })
   }
   else {
@@ -37,19 +51,48 @@ router.get('/getTutorDetail', function (req, res, next) {
             // var userData = data[0];
             const payload = { id: req.body.id };
             let token = jwt.sign(payload, '1612018_1612175');
-            res.json({ data: data[0], skills , token });
+            res.json({
+              code: 1,
+              info: {
+                data: data[0],
+                skills,
+                token,
+                message: "Get details successfully"
+              }
+            });
           })
           .catch(err => {
             console.log(err);
-            res.json(err);
+            res.json({
+              code: 0,
+              info: {
+                data: null,
+                token: null,
+                message: err,
+              }
+            })
           })
       }).catch(err => {
         console.log(err);
-        res.json(err);
+        res.json({
+          code: 0,
+          info: {
+            data: null,
+            token: null,
+            message: err,
+          }
+        })
       })
   }
   else {
-    res.json("Don't try to poke your head into other's privacy pls :(");
+    res.json({
+      code: 0,
+      info: {
+        data: null,
+        token: null,
+        message: "Don't try to poke your head into other's privacy pls :(",
+      }
+    })
   }
 });
 
@@ -71,18 +114,46 @@ router.put('/editPersonalInfo', function (req, res, next) {
             console.log(body.name);
             const payload = { id: body.id };
             let token = jwt.sign(payload, '1612018_1612175');
-            res.json({ responseData, data, token, message: "edit successful", });
+            res.json({
+              code: 1,
+              info: {
+                data,
+                token,
+                message: "edit successful",
+              }
+            });
           })
           .catch(err => {
-            res.json(err);
+            res.json({
+              code: 0,
+              info: {
+                data: null,
+                token: null,
+                message: err,
+              }
+            })
           })
       }).catch(err => {
         console.log(err);
-        res.json(err);
+        res.json({
+          code: 0,
+          info: {
+            data: null,
+            token: null,
+            message: err,
+          }
+        })
       })
   }
   else {
-    res.json(`Don't meddle with others' privacy`);
+    res.json({
+      code: 0,
+      info: {
+        data: null,
+        token: null,
+        message: "Don't try to poke your head into other's privacy pls :(",
+      }
+    })
   }
 })
 
@@ -96,14 +167,35 @@ router.put('/editProfessionalInfo', function (req, res, next) {
       .then(data => {
         const payload = { id: body.id };
         let token = jwt.sign(payload, '1612018_1612175');
-        res.json({ data, token, message: "edit successful", });
+        res.json({
+          code: 1,
+          info: {
+            data,
+            token,
+            message: "edit successful",
+          }
+        });
       }).catch(err => {
         console.log(err);
-        res.json(err);
+        res.json({
+          code: 0,
+          info: {
+            data: null,
+            token: null,
+            message: err,
+          }
+        })
       })
   }
   else {
-    res.json(`Don't meddle with others' privacy`);
+    res.json({
+      code: 0,
+      info: {
+        data: null,
+        token: null,
+        message: "Don't try to poke your head into other's privacy pls :(",
+      }
+    })
   }
 })
 
@@ -124,22 +216,57 @@ router.put('/changePassword', function (req, res, next) {
                 console.log(body.name);
                 const payload = { id: body.id };
                 let token = jwt.sign(payload, '1612018_1612175');
-                res.json({ responseData, data, token, message: "Change password successful", });
+                res.json({
+                  code: 0,
+                  info: {
+                    data,
+                    token,
+                    message: "Change password successful",
+                  }
+                });
               })
               .catch(err => {
-                res.json(err);
+                res.json({
+                  code: 0,
+                  info: {
+                    data: null,
+                    token: null,
+                    message: err,
+                  }
+                })
               })
           }
         } else {
-          res.json({ isEditting: false, message: "No new password input!" });
+          res.json({
+            code: 0,
+            info: {
+              data: null,
+              token: null,
+              message: "No new password input!",
+            }
+          })
         }
       }).catch(err => {
         console.log(err);
-        res.json(err);
+        res.json({
+          code: 0,
+          info: {
+            data: null,
+            token: null,
+            message: err,
+          }
+        })
       })
   }
   else {
-    res.json(`Don't meddle with others' privacy`);
+    res.json({
+      code: 0,
+      info: {
+        data: null,
+        token: null,
+        message: "Don't try to poke your head into other's privacy pls :(",
+      }
+    })
   }
 })
 
