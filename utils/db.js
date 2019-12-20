@@ -16,9 +16,9 @@ var createConnection = () => {
         user: 'root',
         password: '30111998',
         database: 'uber_tutor_admin',
-        dateStrings: true,        
+        dateStrings: true,
         timezone: 'Z',
-        
+
         typeCast: function castField(field, useDefaultTypeCasting) {
 
             if ((field.type === "BIT") && (field.length === 1)) {
@@ -53,8 +53,8 @@ module.exports = {
     },
     add: user => {
         return new Promise((resolve, reject) => {
-            var sql = `INSERT INTO USERs(username, password, name, address, email, phone, yob, gender, role, avatarLink, status, accType, id_social)
-             VALUES('${user.username}', '${user.password}', '${user.name}', '${user.address}', '${user.email}', '${user.phone}',${user.yob},${user.gender},${user.role}, '', ${false}, ${0}, '')`;            
+            var sql = `INSERT INTO USERs( password, name, address, email, phone, yob, gender, role, avatarLink, status, accType, id_social)
+             VALUES('${user.password}', '${user.name}', '${user.address}', '${user.email}', '${user.phone}',${user.yob},${user.gender},${user.role}, '', ${true}, ${0}, '')`;
             var connection = createConnection();
             connection.connect();
             connection.query(sql, (error, results) => {
@@ -67,10 +67,10 @@ module.exports = {
             });
         });
     },
-    addFacebookUser: (user,role) => {
+    addFacebookUser: (user, role) => {
         return new Promise((resolve, reject) => {
-            var sql = `INSERT INTO USERs(username, password, name, address, email, phone, yob, gender, role, avatarLink, status, accType, id_social)
-             VALUES('', '', '${user.name}', '', '${user.email}', '',${1980},${0},${role}, '${user.avatarLink}', ${true}, ${1}, '${user.id_social}')`;            
+            var sql = `INSERT INTO USERs(password, name, address, email, phone, yob, gender, role, avatarLink, status, accType, id_social)
+             VALUES('', '${user.name}', '', '${user.email}', '',${1980},${0},${role}, '${user.avatarLink}', ${true}, ${1}, '${user.id_social}')`;
             var connection = createConnection();
             connection.connect();
             connection.query(sql, (error, results) => {
@@ -83,10 +83,10 @@ module.exports = {
             });
         });
     },
-    addGoogleUser: (user,role) => {
+    addGoogleUser: (user, role) => {
         return new Promise((resolve, reject) => {
-            var sql = `INSERT INTO USERs(username, password, name, address, email, phone, yob, gender, role, avatarLink, status, accType, id_social)
-             VALUES('', '', '${user.name}', '', '${user.email}', '',${1980},${0},${role}, '${user.avatarLink}', ${true}, ${2}, '${user.id_social}')`;            
+            var sql = `INSERT INTO USERs( password, name, address, email, phone, yob, gender, role, avatarLink, status, accType, id_social)
+             VALUES('', '${user.name}', '', '${user.email}', '${user.address}',${1980},${0},${role}, '${user.avatarLink}', ${true}, ${2}, '${user.id_social}')`;
             var connection = createConnection();
             connection.connect();
             connection.query(sql, (error, results) => {
@@ -99,10 +99,11 @@ module.exports = {
             });
         });
     },
-    addTutor: (user,id)=>{
+    addTutor: (user, id) => {
         return new Promise((resolve, reject) => {
-            var sql = `INSERT INTO TUTORs(id, price, major, subjectTeaching, levelTeaching, evaluation, successRate, areaCode, area, introduction)
-             VALUES('${id}', ${0}, '${user.major}', '',${user.levelTeaching}, ${0}, ${0},${0},'','')`;            
+            console.log("This is id: " + id);
+            var sql = `INSERT INTO TUTORs(id_user, price, major, levelTeaching, evaluation, successRate, areaCode, area, introduction)
+             VALUES('${id}', ${0}, '${user.major}',${user.levelTeaching}, ${0}, ${0},${0},'','')`;
             var connection = createConnection();
             connection.connect();
             connection.query(sql, (error, results) => {
@@ -114,5 +115,86 @@ module.exports = {
                 connection.end();
             });
         });
-    }
+    },
+    getLearnerDetail: (id) => {
+        return new Promise((resolve, reject) => {
+            var sql = `select * from users as U where id = ${id} and status=${true}`;
+            var connection = createConnection();
+            connection.connect();
+            connection.query(sql, (error, results) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve(results);
+                }
+                connection.end();
+            });
+        })
+    },
+    getTutorDetail: (id) => {
+        return new Promise((resolve, reject) => {
+            var sql = `select U.id, U.name, U.role, U.address, U.email, U.phone, U.gender, U.yob, U.avatarLink, 
+            T.price, T.levelTeaching, T.major, M.name, T.evaluation, T.successRate, T.areaCode, A.area
+            from users as U, tutors as T, majors as M, areas as A  
+            where U.id = T.id_user and T.major = M.id and A.id_area = T.areaCode and 
+            U.id = ${id} and U.role = ${1}`;
+            var connection = createConnection();
+            connection.connect();
+            connection.query(sql, (error, results) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve(results);
+                }
+                connection.end();
+            });
+        })
+    },
+    updateBasicInfo: (id, info) => {
+        return new Promise((resolve, reject) => {
+            var sql = `update users set name = '${info.name}', address = '${info.address}', phone = '${info.phone}', yob = '${info.yob}', avatarLink = '${info.avatarLink}', isEditting = ${false}
+                    where id = ${id}`;
+            var connection = createConnection();
+            connection.connect();
+            connection.query(sql, (error, results) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve(results);
+                }
+                connection.end();
+            });
+        })
+    },
+    updateProfessionalInfo: (id, info) => {
+        return new Promise((resolve, reject) => {
+            var sql = `update tutors set price = ${info.price}, major = ${info.major}, levelTeaching = ${info.levelTeaching}, introduction = '${info.introduction}', areaCode = ${info.areaCode}, isEditting = ${false}
+                    where id_user = ${id}`;
+            var connection = createConnection();
+            connection.connect();
+            connection.query(sql, (error, results) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve(results);
+                }
+                connection.end();
+            });
+        })
+    },
+    updatePassword: (id, password) => {
+        return new Promise((resolve, reject) => {
+            var sql = `update users set password = '${password.newPassword}', isEditting = ${false} where id = ${id}`;
+            var connection = createConnection();
+            connection.connect();
+            connection.query(sql, (error, results) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve(results);
+                }
+                connection.end();
+            });
+        });
+    },
 }
