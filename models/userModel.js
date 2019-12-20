@@ -48,5 +48,8 @@ module.exports = {
     },
     updatePassword: (id, password) => {
         return db.updatePassword(id, password);
+    },
+    recoverPassword: (id, newPassword) => {
+        return db.query(`update users set password = '${newPassword}' where id = ${id}`);
     }
 }

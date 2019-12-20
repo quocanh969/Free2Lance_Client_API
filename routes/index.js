@@ -1,11 +1,17 @@
 var express = require('express');
 var jwt = require('jsonwebtoken');
 var passport = require('passport');
+var nodemailer = require('nodemailer');
+var crypto = require('crypto');
+
 var userModel = require('../models/userModel');
 var majorModel = require('../models/majorModel');
 var areaModel = require('../models/areaModel');
 
 var router = express.Router();
+
+const EMAIL_USERNAME = "ubertutor018175";
+const EMAIL_PASSWORD = "Ubertutor123";
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
@@ -329,13 +335,81 @@ router.get('/getTopMajors', (req, res) => {
 
 router.get('/getAreas', (req, res) => {
   areaModel.getAll()
-  .then(data => {
-    res.json(data);
-  })
-  .catch(err => {
-    console.log(err);
-    res.end(err);
-  })
+    .then(data => {
+      res.json(data);
+    })
+    .catch(err => {
+      console.log(err);
+      res.end(err);
+    })
+})
+
+router.post('/recoverPassword', (req, res) => {
+  var emailStr = req.body.email;
+  if (emailStr === '') {
+    res.status(400).send('email require');
+  }
+  console.log(emailStr);
+  userModel.getByEmail(emailStr)
+    .then(user => {
+      console.log(user.length);
+      if (user.length === 0) {
+        res.json({
+          code: 0,
+          info: {
+            data: null,
+            token: null,
+            message: 'User not found in db!',
+          }
+        })
+      } else {
+        const token = crypto.randomBytes(10).toString('hex');
+        console.log("Token: " + token);
+        const transporter = nodemailer.createTransport({
+          service: 'gmail',
+          auth: {
+            user: `${EMAIL_USERNAME}`,
+            pass: `${EMAIL_PASSWORD}`,
+          },
+        });
+        const mailOptions = {
+          from: EMAIL_USERNAME,
+          to: `${user[0].email}`,
+          subject: 'Link To Reset Password',
+          text:
+            'You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n'
+            + 'Please click on the following link, or paste this into your browser to complete the process within one hour of receiving it:\n\n'
+            + `http://localhost:3000/reset/token=${token}&id=${user[0].id}\n\n`
+            + 'If you did not request this, please ignore this email and your password will remain unchanged.\n',
+        };
+
+        transporter.sendMail(mailOptions, (err, response) => {
+          if (err) {
+            console.error('there was an error: ', err);
+          } else {
+            console.log('here is the res: ', response);
+            res.json({
+              code: 1,
+              info: {
+                data: null,
+                token: null,
+                message: 'Recovery mail sent',
+              }
+            });
+          }
+        });
+      }
+    })
+    .catch(err => {
+      res.json({
+        code: 0,
+        info: {
+          data: null,
+          token: null,
+          message: err,
+        }
+      })
+    })
 })
 
 module.exports = router;
