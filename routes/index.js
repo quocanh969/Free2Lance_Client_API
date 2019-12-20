@@ -363,7 +363,7 @@ router.post('/recoverPassword', (req, res) => {
           }
         })
       } else {
-        const token = crypto.randomBytes(10).toString('hex');
+        const token = crypto.randomBytes(4).toString('hex');
         console.log("Token: " + token);
         const transporter = nodemailer.createTransport({
           service: 'gmail',
@@ -379,10 +379,11 @@ router.post('/recoverPassword', (req, res) => {
           text:
             'You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n'
             + 'Please click on the following link, or paste this into your browser to complete the process within one hour of receiving it:\n\n'
-            + `http://localhost:3000/reset/token=${token}&id=${user[0].id}\n\n`
+
+            + `http://localhost:3000/recover-password/token=${token}&id=${user[0].id}\n\n`
+
             + 'If you did not request this, please ignore this email and your password will remain unchanged.\n',
         };
-
         transporter.sendMail(mailOptions, (err, response) => {
           if (err) {
             console.error('there was an error: ', err);
@@ -412,4 +413,30 @@ router.post('/recoverPassword', (req, res) => {
     })
 })
 
+router.put('/getNewPassword', (req, res) => {
+  var id = Number.parseInt(req.body.id);
+  userModel.recoverPassword(id, req.body.newPassword)
+    .then(data => {
+      res.json({
+        code: 1,
+        info: {
+          data: req.body.newPassword,
+          token: null,
+          message: 'New password updated',
+        }
+      })
+    })
+    .catch(err => {
+      res.json({
+        code: 0,
+        info: {
+          data: null,
+          token: null,
+          message: err,
+        }
+      })
+    })
+})
+
 module.exports = router;
+

@@ -208,8 +208,25 @@ router.put('/changePassword', function (req, res, next) {
         console.log("Old password " + responseData[0].password);
         var oldPassword = responseData[0].password;
         if (body.newPassword !== null && body.newPassword !== undefined && body.newPassword !== '') {
-          if (body.oldPassword !== oldPassword || body.newPassword !== body.reconfirmPassword) {
-            res.json({ message: "Old password does not match/ reconfirmed password does not match", });
+          if (body.oldPassword !== oldPassword) {
+            res.json({
+              code: 0,
+              info: {
+                data: null,
+                token: null,
+                message: "Old password does not match",
+              }
+            })
+          }
+          else if (body.newPassword !== body.reconfirmPassword) {
+            res.json({
+              code: 0,
+              info: {
+                data: null,
+                token: null,
+                message: "Reconfirmed password does not match",
+              }
+            })
           } else {
             userModel.updatePassword(body.id, body)
               .then(data => {
@@ -217,7 +234,7 @@ router.put('/changePassword', function (req, res, next) {
                 const payload = { id: body.id };
                 let token = jwt.sign(payload, '1612018_1612175');
                 res.json({
-                  code: 0,
+                  code: 1,
                   info: {
                     data,
                     token,
