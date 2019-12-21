@@ -538,18 +538,34 @@ router.get('/getTopTutor', (req, res) => {
     .then(data => {
       const tutors = _.groupBy(data, "id");
       console.log(JSON.parse(JSON.stringify(tutors)));
-      for (var i in tutors) {
-        console.log(i);
-        const skills = _.map(i, item => {
-          const { skill, id_skill, id_teacher } = item;
-          return { skill, id_skill, id_teacher };
+      var final = [];
+      _.forEach(tutors, (value, key) => {
+        const skills = _.map(value, item => {
+          const { skill, id_skill, skill_tag } = item;
+          return { skill, id_skill, skill_tag };
         })
-      }
-      console.log(skills);
+        const temp = {
+          id: value[0].id,
+          name: value[0].name,
+          email: value[0].email,
+          yob: value[0].yob,
+          gender: value[0].gender,
+          id_area: value[0].id_area,
+          area: value[0].area,
+          phone: value[0].phone,
+          price: value[0].price,
+          avatarLink: value[0].avatarLink,
+          id_major: value[0].id_major,
+          major_name: value[0].major_name,
+          skills,
+        }
+        final.push(temp);
+      })
+      console.log(final);
       res.json({
         code: 1,
         info: {
-          data: tutors,
+          data: final,
           token: null,
           message: 1,
         }
