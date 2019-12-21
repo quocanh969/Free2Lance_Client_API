@@ -54,7 +54,7 @@ module.exports = {
     add: user => {
         return new Promise((resolve, reject) => {
             var sql = `INSERT INTO USERs( password, name, address, email, phone, yob, gender, role, avatarLink, status, accType, id_social)
-             VALUES('${user.password}', '${user.name}', '${user.address}', '${user.email}', '${user.phone}',${user.yob},${user.gender},${user.role}, '', ${true}, ${0}, '')`;
+             VALUES('${user.password}', '${user.name}', '${user.address}', '${user.email}', '${user.phone}',${user.yob},${user.gender},${user.role}, '', ${false}, ${0}, '')`;
             var connection = createConnection();
             connection.connect();
             connection.query(sql, (error, results) => {

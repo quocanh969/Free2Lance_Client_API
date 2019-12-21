@@ -9,6 +9,7 @@ var majorModel = require('../models/majorModel');
 var areaModel = require('../models/areaModel');
 
 var router = express.Router();
+var _ = require('lodash')
 
 const EMAIL_USERNAME = "ubertutor018175";
 const EMAIL_PASSWORD = "Ubertutor123";
@@ -256,7 +257,7 @@ router.post('/login-google', (req, res) => {
 router.post('/register-student', (req, res) => {
   var user = req.body;
   console.log(user);
-  userModel.getByEmail(user.email)
+  userModel.getByEmail(user.email, null)
     .then((data) => {
 
       if (data.length > 0) { // đã tồn tại
@@ -281,7 +282,7 @@ router.post('/register-student', (req, res) => {
 
 router.post('/register-tutor', (req, res) => {
   var user = req.body;
-  userModel.getByEmail(user.email)
+  userModel.getByEmail(user.email, null)
     .then((data) => {
       if (data.length > 0) { // đã tồn tại
         res.json({ message: 'Email is existed', code: -1 });
@@ -350,7 +351,7 @@ router.post('/recoverPassword', (req, res) => {
     res.status(400).send('email require');
   }
   console.log(emailStr);
-  userModel.getByEmail(emailStr)
+  userModel.getByEmail(emailStr, true)
     .then(user => {
       console.log(user.length);
       if (user.length === 0) {
@@ -413,6 +414,75 @@ router.post('/recoverPassword', (req, res) => {
     })
 })
 
+router.post('/activate', (req, res) => {
+  var emailStr = req.body.email;
+  if (emailStr === '') {
+    res.status(400).send('email require');
+  }
+  console.log(emailStr);
+  userModel.getByEmail(emailStr, false)
+    .then(user => {
+      console.log(user.length);
+      if (user.length === 0) {
+        res.json({
+          code: 0,
+          info: {
+            data: null,
+            token: null,
+            message: 'Already activated or not found',
+          }
+        })
+      } else {
+        const token = crypto.randomBytes(4).toString('hex');
+        console.log("Token: " + token);
+        const transporter = nodemailer.createTransport({
+          service: 'gmail',
+          auth: {
+            user: `${EMAIL_USERNAME}`,
+            pass: `${EMAIL_PASSWORD}`,
+          },
+        });
+        const mailOptions = {
+          from: EMAIL_USERNAME,
+          to: `${user[0].email}`,
+          subject: 'Link To Activate Your Account',
+          text:
+            'You are receiving this because you (or someone else) have signed up to our website.\n\n'
+            + 'Please click on the following link, or paste this into your browser to complete the process within one hour of receiving it:\n\n'
+
+            + `http://localhost:3000/activate-account/token=${token}&id=${user[0].id}\n\n`
+
+            + 'If you did not request this, please ignore this email and your account will remain unchanged.\n',
+        };
+        transporter.sendMail(mailOptions, (err, response) => {
+          if (err) {
+            console.error('there was an error: ', err);
+          } else {
+            console.log('here is the res: ', response);
+            res.json({
+              code: 1,
+              info: {
+                data: null,
+                token: null,
+                message: 'Activation mail sent',
+              }
+            });
+          }
+        });
+      }
+    })
+    .catch(err => {
+      res.json({
+        code: 0,
+        info: {
+          data: null,
+          token: null,
+          message: err,
+        }
+      })
+    })
+})
+
 router.put('/getNewPassword', (req, res) => {
   var id = Number.parseInt(req.body.id);
   userModel.recoverPassword(id, req.body.newPassword)
@@ -438,5 +508,69 @@ router.put('/getNewPassword', (req, res) => {
     })
 })
 
+router.put('/activated', (req, res) => {
+  var id = Number.parseInt(req.body.id);
+  userModel.activateAcc(id)
+    .then(data => {
+      res.json({
+        code: 1,
+        info: {
+          data,
+          token: null,
+          message: 'Account activated',
+        }
+      })
+    })
+    .catch(err => {
+      res.json({
+        code: 0,
+        info: {
+          data: null,
+          token: null,
+          message: err,
+        }
+      })
+    })
+})
+
+router.get('/getTopTutor', (req, res) => {
+  userModel.getTopTutor()
+    .then(data => {
+      const tutors = _.groupBy(data, "id");
+      console.log(JSON.parse(JSON.stringify(tutors)));
+      for (var i in tutors) {
+        console.log(i);
+        const skills = _.map(i, item => {
+          const { skill, id_skill, id_teacher } = item;
+          return { skill, id_skill, id_teacher };
+        })
+      }
+      console.log(skills);
+      res.json({
+        code: 1,
+        info: {
+          data: tutors,
+          token: null,
+          message: 1,
+        }
+      })
+    })
+    .catch(err => {
+      res.json({
+        code: 0,
+        info: {
+          message: err,
+          token: null,
+          data: null
+        }
+      });
+    })
+})
+function TransformRows(rows) {
+  rows = JSON.parse(JSON.stringify(rows));
+  rowsGroupby = _.groupBy(rows, row => row.id);
+  rows = _.map(rowsGroupby, (rowGroupby, key) => ({ id: key, id_skill: rowGroupby }));
+  return rows;
+}
 module.exports = router;
 

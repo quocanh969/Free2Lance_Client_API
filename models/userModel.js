@@ -6,8 +6,11 @@ module.exports = {
             return db.query(`SELECT * FROM USERs WHERE ${key} LIKE ${value} and status= ${true}`);
         return db.query(`SELECT * FROM USERs WHERE status=${true}`);
     },
-    getByEmail: email => {
-        return db.query(`SELECT * FROM USERs WHERE email = '${email}' and status= ${true}`);
+    getByEmail: (email, status) => {
+        if (status === null)
+            return db.query(`SELECT * FROM USERs WHERE email = '${email}'`);
+        else
+            return db.query(`SELECT * FROM USERs WHERE email = '${email}' and status= ${status}`);
     },
     getByFacebookId: id => {
         return db.query(`SELECT * FROM USERs WHERE accType = 1 AND id_social = '${id}' and status=${true}`);
@@ -26,6 +29,16 @@ module.exports = {
     },
     addTutor: (user, id) => {
         return db.addTutor(user, id);
+    },
+    activateAcc: (id) => {
+        return db.query(`update users set status = ${true} where id = ${id}`);
+    },
+    getTopTutor: () => {
+        return db.query(`select u.id, u.name, u.email, u.yob, u.gender, u.phone, u.address,
+        m.id as id_major, m.name as major_name, s.id_skill ,s.skill, sc.id_teacher, u.avatarLink, t.evaluation, t.introduction, a.id_area, a.area
+        from users as u, tutors as t, areas as a, skills as s, skill_table as sc, majors as m
+        where u.id = t.id_user and u.role = 1 and t.areaCode = a.id_area and m.id = t.major and sc.id_teacher = u.id and sc.skill_code = s.id_skill
+        and u.status = 1`);
     },
     getLearnerDetail: (id) => {
         return db.getLearnerDetail(id);
