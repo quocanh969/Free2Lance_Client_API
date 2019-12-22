@@ -57,75 +57,75 @@ passport.use('GetLearnerDetail', new JWTStrategy(
     },
 ));
 
-passport.use('GetTutorDetail', new JWTStrategy(
-    {
-        jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
-        secretOrKey: '1612018_1612175',
-    },
-    function (jwtPayload, cb) {
-        return userModel.getTutorDetail(jwtPayload.id)
-            .then(user => {
-                if (user.length > 0)
-                    return cb(null, user[0], { message: 'Authorized', code: 1 });
-                else
-                    return cb(null, null, { message: 'Cannot get User', code: 0 })
-            })
-            .catch(err => {
-                return cb(err, null, { message: 'Can not authorized', code: 0 });
-            });
-    },
-));
+// passport.use('GetTutorDetail', new JWTStrategy(
+//     {
+//         jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
+//         secretOrKey: '1612018_1612175',
+//     },
+//     function (jwtPayload, cb) {
+//         return userModel.getTutorDetail(jwtPayload.id)
+//             .then(user => {
+//                 if (user.length > 0)
+//                     return cb(null, user[0], { message: 'Authorized', code: 1 });
+//                 else
+//                     return cb(null, null, { message: 'Cannot get User', code: 0 })
+//             })
+//             .catch(err => {
+//                 return cb(err, null, { message: 'Can not authorized', code: 0 });
+//             });
+//     },
+// ));
 
-passport.use('EditPersonalInfo', new JWTStrategy(
-    {
-        jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
-        secretOrKey: '1612018_1612175',
-        passReqToCallback: true,
-    },
-    function (req, token, done) {
-        var info = req.body;
-        console.log(info);
-        console.log(token);
-        return userModel.updateBasicInfo(token.id, info)
-            .then(result => {
-                return done({ message: 'Edit successful', code: 1, result });
-            }).catch(err => {
-                return done({ message: err, code: 0 });
-            })
-    },
-));
+// passport.use('EditPersonalInfo', new JWTStrategy(
+//     {
+//         jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
+//         secretOrKey: '1612018_1612175',
+//         passReqToCallback: true,
+//     },
+//     function (req, token, done) {
+//         var info = req.body;
+//         console.log(info);
+//         console.log(token);
+//         return userModel.updateBasicInfo(token.id, info)
+//             .then(result => {
+//                 return done({ message: 'Edit successful', code: 1, result });
+//             }).catch(err => {
+//                 return done({ message: err, code: 0 });
+//             })
+//     },
+// ));
 
-passport.use('EditProfessionalInfo', new JWTStrategy(
-    {
-        jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
-        secretOrKey: '1612018_1612175',
-        passReqToCallback: true,
-    },
-    function (req, token, done) {
-        var info = req.body;
-        console.log(info);
-        console.log(token);
-        return userModel.updateProfessionalInfo(token.id, info)
-            .then(result => {
-                return done({ message: 'Edit successful', code: 1, result });
-            }).catch(err => {
-                return done({ message: err, code: 0 });
-            })
-    },
-));
+// passport.use('EditProfessionalInfo', new JWTStrategy(
+//     {
+//         jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
+//         secretOrKey: '1612018_1612175',
+//         passReqToCallback: true,
+//     },
+//     function (req, token, done) {
+//         var info = req.body;
+//         console.log(info);
+//         console.log(token);
+//         return userModel.updateProfessionalInfo(token.id, info)
+//             .then(result => {
+//                 return done({ message: 'Edit successful', code: 1, result });
+//             }).catch(err => {
+//                 return done({ message: err, code: 0 });
+//             })
+//     },
+// ));
 
-passport.use('InitContract', new JWTStrategy(
-    {
-        jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
-        secretOrKey: '1612018_1612175',
-        passReqToCallback: true,
-    },
-    function (req, token, done) {
-        return contractModel.CreateContract(token.id, info)
-        .then(result => {
-            return done({message: 'Create successful', code: 1, result});
-        }).catch(err => {
-            return done({message: 'Create failed', code: 0, err});
-        })
-    },
-))
+// passport.use('InitContract', new JWTStrategy(
+//     {
+//         jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
+//         secretOrKey: '1612018_1612175',
+//         passReqToCallback: true,
+//     },
+//     function (req, token, done) {
+//         return contractModel.CreateContract(token.id, info)
+//         .then(result => {
+//             return done({message: 'Create successful', code: 1, result});
+//         }).catch(err => {
+//             return done({message: 'Create failed', code: 0, err});
+//         })
+//     },
+// ))
