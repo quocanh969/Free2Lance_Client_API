@@ -320,7 +320,32 @@ router.post('/register-tutor', (req, res) => {
             console.log(responseData);
             userModel.addTutor(user, responseData.insertId)
               .then(data => {
-                res.json({ message: 'Register success !!!', code: 1 });
+                const transporter = nodemailer.createTransport({
+                  service: 'gmail',
+                  auth: {
+                    user: `${EMAIL_USERNAME}`,
+                    pass: `${EMAIL_PASSWORD}`,
+                  },
+                });
+                const mailOptions = {
+                  from: EMAIL_USERNAME,
+                  to: `${user.email}`,
+                  subject: 'Link To Activate Your Account',
+                  text:
+                    'You are receiving this because you (or someone else) have signed up to our website.\n\n'
+                    + 'Please click on the following link, or paste this into your browser to complete the process:\n\n'
+        
+                    + `http://localhost:3000/activate-account/id=${data.insertId}\n\n`
+        
+                    + 'If you did not request this, please ignore this email and your account will not be activate.\n',
+                };
+                transporter.sendMail(mailOptions, (err, response) => {
+                  if (err) {
+                    res.json({ message: 'Register fail while sending an email !!!', code: 0 });
+                  } else {
+                    res.json({ message: 'Register success and activate mail was sent to your email address !!!', code: 1 });
+                  }
+                });
               })
               .catch((error) => {
                 console.log(error);
