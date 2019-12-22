@@ -6,6 +6,8 @@ const JWTStrategy = passportJWT.Strategy;
 const ExtractJWT = passportJWT.ExtractJwt;
 
 const userModel = require('./models/userModel');
+const contractModel = require('./models/contractModel');
+
 
 
 passport.use(new LocalStrategy(
@@ -111,3 +113,19 @@ passport.use('EditProfessionalInfo', new JWTStrategy(
             })
     },
 ));
+
+passport.use('InitContract', new JWTStrategy(
+    {
+        jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
+        secretOrKey: '1612018_1612175',
+        passReqToCallback: true,
+    },
+    function (req, token, done) {
+        return contractModel.CreateContract(token.id, info)
+        .then(result => {
+            return done({message: 'Create successful', code: 1, result});
+        }).catch(err => {
+            return done({message: 'Create failed', code: 0, err});
+        })
+    },
+))

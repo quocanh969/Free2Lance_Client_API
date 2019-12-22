@@ -7,6 +7,8 @@ var crypto = require('crypto');
 var userModel = require('../models/userModel');
 var majorModel = require('../models/majorModel');
 var areaModel = require('../models/areaModel');
+var contractModel = require('../models/contractModel');
+
 
 var router = express.Router();
 var _ = require('lodash')
@@ -615,6 +617,34 @@ router.get('/getTutorList', (req, res) => {
         }
       });
     })
+})
+
+router.get('/getContracts', (req, res) => {
+  let {id, key, page} = req.body;
+  id = Number.parseInt(id);
+  key = Number.parseInt(key);
+  page = Number.parseInt(page);
+  contractModel.getContracts(id, key, page)
+  .then( data => {
+    res.json({
+      code: 1,
+      info: {
+        data,
+        token: null,
+        message: "Get successfully",
+      }
+    })
+  })
+  .catch( err => {
+    res.json({
+      code: 0,
+      info: {
+        data: null,
+        token: null,
+        message: err,
+      }
+    })
+  })
 })
 
 module.exports = router;

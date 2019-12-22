@@ -34,7 +34,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users',
-  passport.authenticate(['GetLearnerDetail', 'GetTutorDetail', 'EditPersonalInfo', 'EditProfessionalInfo', 'jwt'],
+  passport.authenticate(['GetLearnerDetail', 'GetTutorDetail', 'EditPersonalInfo', 'EditProfessionalInfo',
+                          'InitContract', 'jwt'],
     { session: false }), usersRouter);
 
 // catch 404 and forward to error handler

@@ -1,6 +1,8 @@
 var express = require('express');
 var router = express.Router();
 var userModel = require('../models/userModel');
+var contractModel = require('../models/contractModel');
+
 var jwt = require('jsonwebtoken');
 var passport = require('passport');
 
@@ -285,6 +287,33 @@ router.put('/changePassword', function (req, res, next) {
       }
     })
   }
+})
+
+router.post('/newContract', (req, res) => {
+  var body = req.body;
+  contractModel.CreateContract(body.id, body)
+    .then(data => {
+      const payload = { id: body.id };
+      let token = jwt.sign(payload, '1612018_1612175');
+      res.json({
+        code: 1,
+        info: {
+          data,
+          token,
+          message: "Create successfully",
+        }
+      })
+    })
+    .catch(err => {
+      res.json({
+        code: 0,
+        info: {
+          data: null,
+          token: null,
+          message: err,
+        }
+      })
+    })
 })
 
 module.exports = router;
