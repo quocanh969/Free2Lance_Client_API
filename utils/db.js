@@ -1,4 +1,5 @@
 var mysql = require('mysql');
+var crypto = require('crypto');
 
 var createConnection = () => {
     return mysql.createConnection({
@@ -14,7 +15,7 @@ var createConnection = () => {
         host: 'localhost',
         port: '3306',
         user: 'root',
-        password: '30111998',
+        password: '',
         database: 'uber_tutor_admin',
         dateStrings: true,
         timezone: 'Z',
@@ -68,9 +69,10 @@ module.exports = {
         });
     },
     addFacebookUser: (user, role) => {
+        const password = crypto.randomBytes(4).toString('hex');
         return new Promise((resolve, reject) => {
             var sql = `INSERT INTO USERs(password, name, address, email, phone, yob, gender, role, avatarLink, status, accType, id_social)
-             VALUES('', '${user.name}', '', '${user.email}', '',${1980},${0},${role}, '${user.avatarLink}', ${true}, ${1}, '${user.id_social}')`;
+             VALUES('${password}', '${user.name}', '', '${user.email}', '',${1980},${0},${role}, '${user.avatarLink}', ${true}, ${1}, '${user.id_social}')`;
             var connection = createConnection();
             connection.connect();
             connection.query(sql, (error, results) => {
@@ -84,9 +86,10 @@ module.exports = {
         });
     },
     addGoogleUser: (user, role) => {
+        const password = crypto.randomBytes(4).toString('hex');
         return new Promise((resolve, reject) => {
             var sql = `INSERT INTO USERs( password, name, address, email, phone, yob, gender, role, avatarLink, status, accType, id_social)
-             VALUES('', '${user.name}', '', '${user.email}', '${user.address}',${1980},${0},${role}, '${user.avatarLink}', ${true}, ${2}, '${user.id_social}')`;
+             VALUES('${password}', '${user.name}', '', '${user.email}', '${user.address}',${1980},${0},${role}, '${user.avatarLink}', ${true}, ${2}, '${user.id_social}')`;
             var connection = createConnection();
             connection.connect();
             connection.query(sql, (error, results) => {

@@ -265,8 +265,34 @@ router.post('/register-student', (req, res) => {
       }
       else {
         userModel.register(user)
-          .then(() => {
-            res.json({ message: 'Register success !!!', code: 1 });
+          .then((data) => {
+            const transporter = nodemailer.createTransport({
+              service: 'gmail',
+              auth: {
+                user: `${EMAIL_USERNAME}`,
+                pass: `${EMAIL_PASSWORD}`,
+              },
+            });
+            const mailOptions = {
+              from: EMAIL_USERNAME,
+              to: `${user.email}`,
+              subject: 'Link To Activate Your Account',
+              text:
+                'You are receiving this because you (or someone else) have signed up to our website.\n\n'
+                + 'Please click on the following link, or paste this into your browser to complete the process:\n\n'
+    
+                + `http://localhost:3000/activate-account/id=${data.insertId}\n\n`
+    
+                + 'If you did not request this, please ignore this email and your account will not be activate.\n',
+            };
+            transporter.sendMail(mailOptions, (err, response) => {
+              if (err) {
+                res.json({ message: 'Register fail while sending an email !!!', code: 0 });
+              } else {
+                res.json({ message: 'Register success and activate mail was sent to your email address !!!', code: 1 });
+              }
+            }); 
+            
           })
           .catch((error) => {
             console.log(error);
@@ -396,75 +422,6 @@ router.post('/recoverPassword', (req, res) => {
                 data: null,
                 token: null,
                 message: 'Recovery mail sent',
-              }
-            });
-          }
-        });
-      }
-    })
-    .catch(err => {
-      res.json({
-        code: 0,
-        info: {
-          data: null,
-          token: null,
-          message: err,
-        }
-      })
-    })
-})
-
-router.post('/activate', (req, res) => {
-  var emailStr = req.body.email;
-  if (emailStr === '') {
-    res.status(400).send('email require');
-  }
-  console.log(emailStr);
-  userModel.getByEmail(emailStr, false)
-    .then(user => {
-      console.log(user.length);
-      if (user.length === 0) {
-        res.json({
-          code: 0,
-          info: {
-            data: null,
-            token: null,
-            message: 'Already activated or not found',
-          }
-        })
-      } else {
-        const token = crypto.randomBytes(4).toString('hex');
-        console.log("Token: " + token);
-        const transporter = nodemailer.createTransport({
-          service: 'gmail',
-          auth: {
-            user: `${EMAIL_USERNAME}`,
-            pass: `${EMAIL_PASSWORD}`,
-          },
-        });
-        const mailOptions = {
-          from: EMAIL_USERNAME,
-          to: `${user[0].email}`,
-          subject: 'Link To Activate Your Account',
-          text:
-            'You are receiving this because you (or someone else) have signed up to our website.\n\n'
-            + 'Please click on the following link, or paste this into your browser to complete the process within one hour of receiving it:\n\n'
-
-            + `http://localhost:3000/activate-account/token=${token}&id=${user[0].id}\n\n`
-
-            + 'If you did not request this, please ignore this email and your account will remain unchanged.\n',
-        };
-        transporter.sendMail(mailOptions, (err, response) => {
-          if (err) {
-            console.error('there was an error: ', err);
-          } else {
-            console.log('here is the res: ', response);
-            res.json({
-              code: 1,
-              info: {
-                data: null,
-                token: null,
-                message: 'Activation mail sent',
               }
             });
           }
