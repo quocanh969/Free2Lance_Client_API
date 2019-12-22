@@ -335,7 +335,7 @@ router.post('/register-tutor', (req, res) => {
                     'You are receiving this because you (or someone else) have signed up to our website.\n\n'
                     + 'Please click on the following link, or paste this into your browser to complete the process:\n\n'
         
-                    + `http://localhost:3000/activate-account/id=${data.insertId}\n\n`
+                    + `http://localhost:3000/activate-account/id=${responseData.insertId}\n\n`
         
                     + 'If you did not request this, please ignore this email and your account will not be activate.\n',
                 };
