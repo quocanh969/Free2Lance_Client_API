@@ -16,7 +16,7 @@ passport.use(new LocalStrategy(
     function (username, password, cb) {
         console.log("local login authenticate");
         console.log(username);
-        return userModel.getByEmail(username)
+        return userModel.getByEmail(username, true)
             .then((data) => {
                 if (data.length > 0) { // đã tồn tại
                     if (password === data[0].password) {

@@ -280,9 +280,9 @@ router.post('/register-student', (req, res) => {
               text:
                 'You are receiving this because you (or someone else) have signed up to our website.\n\n'
                 + 'Please click on the following link, or paste this into your browser to complete the process:\n\n'
-    
+
                 + `http://localhost:3000/activate-account/id=${data.insertId}\n\n`
-    
+
                 + 'If you did not request this, please ignore this email and your account will not be activate.\n',
             };
             transporter.sendMail(mailOptions, (err, response) => {
@@ -291,8 +291,8 @@ router.post('/register-student', (req, res) => {
               } else {
                 res.json({ message: 'Register success and activate mail was sent to your email address !!!', code: 1 });
               }
-            }); 
-            
+            });
+
           })
           .catch((error) => {
             console.log(error);
@@ -334,9 +334,9 @@ router.post('/register-tutor', (req, res) => {
                   text:
                     'You are receiving this because you (or someone else) have signed up to our website.\n\n'
                     + 'Please click on the following link, or paste this into your browser to complete the process:\n\n'
-        
+
                     + `http://localhost:3000/activate-account/id=${responseData.insertId}\n\n`
-        
+
                     + 'If you did not request this, please ignore this email and your account will not be activate.\n',
                 };
                 transporter.sendMail(mailOptions, (err, response) => {
@@ -564,11 +564,58 @@ router.get('/getTopTutor', (req, res) => {
       });
     })
 })
-function TransformRows(rows) {
-  rows = JSON.parse(JSON.stringify(rows));
-  rowsGroupby = _.groupBy(rows, row => row.id);
-  rows = _.map(rowsGroupby, (rowGroupby, key) => ({ id: key, id_skill: rowGroupby }));
-  return rows;
-}
+
+router.get('/getTutorList', (req, res) => {
+  let { area, price, major, name, page} = req.body;
+  price = Number.parseInt(req.body.price);
+  userModel.getTutorList(area, price, major, name, page)
+    .then(data => {
+      const tutors = _.groupBy(data, "id");
+      console.log(JSON.parse(JSON.stringify(tutors)));
+      var final = [];
+      _.forEach(tutors, (value, key) => {
+        const skills = _.map(value, item => {
+          const { skill, id_skill, skill_tag } = item;
+          return { skill, id_skill, skill_tag };
+        })
+        const temp = {
+          id: value[0].id,
+          name: value[0].name,
+          email: value[0].email,
+          yob: value[0].yob,
+          gender: value[0].gender,
+          id_area: value[0].id_area,
+          area: value[0].area,
+          phone: value[0].phone,
+          price: value[0].price,
+          avatarLink: value[0].avatarLink,
+          id_major: value[0].id_major,
+          major_name: value[0].major_name,
+          skills,
+        }
+        final.push(temp);
+      })
+      console.log(final);
+      res.json({
+        code: 1,
+        info: {
+          data: final,
+          token: null,
+          message: 1,
+        }
+      })
+    })
+    .catch(err => {
+      res.json({
+        code: 0,
+        info: {
+          message: err,
+          token: null,
+          data: null
+        }
+      });
+    })
+})
+
 module.exports = router;
 

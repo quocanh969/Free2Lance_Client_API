@@ -8,9 +8,9 @@ module.exports = {
     },
     getByEmail: (email, status) => {
         if (status === null)
-            return db.query(`SELECT * FROM USERs WHERE email = '${email}'`);
+            return db.query(`SELECT * FROM USERs WHERE email = '${email}' and isActivated = ${true}`);
         else
-            return db.query(`SELECT * FROM USERs WHERE email = '${email}' and status= ${status}`);
+            return db.query(`SELECT * FROM USERs WHERE email = '${email}' and status= ${status} and isActivated = ${true}`);
     },
     getByFacebookId: id => {
         return db.query(`SELECT * FROM USERs WHERE accType = 1 AND id_social = '${id}' and status=${true}`);
@@ -31,7 +31,7 @@ module.exports = {
         return db.addTutor(user, id);
     },
     activateAcc: (id) => {
-        return db.query(`update users set status = ${true} where id = ${id}`);
+        return db.query(`update users set status = ${true}, isActivated  = ${true} where id = ${id}`);
     },
     getTopTutor: () => {
         return db.query(`select u.id, u.name, u.email, u.yob, u.gender, u.phone, u.address, t.price,
@@ -64,5 +64,19 @@ module.exports = {
     },
     recoverPassword: (id, newPassword) => {
         return db.query(`update users set password = '${newPassword}' where id = ${id}`);
+    },
+    getTutorList: (area, price, major, name, skip) => {
+        if (price > 0)
+            return db.query(`select u.id, u.name, u.email, u.yob, u.gender, u.phone, u.address, t.price,
+            m.id as id_major, m.name as major_name, s.id_skill ,s.skill, s.skill_tag, u.avatarLink, t.evaluation, t.introduction, a.id_area, a.area
+            from users as u, (select * from tutors limit ${5} offset ${5 * skip}) as t, areas as a, skills as s, skill_table as sc, majors as m
+            where u.id = t.id_user and u.role = 1 and t.areaCode = a.id_area and m.id = t.major and sc.id_teacher = u.id and sc.skill_code = s.id_skill
+            and u.status = 1 and a.area like '%${area}%' and t.price <= ${price} and m.name like '%${major}%' and u.name like '%${name}%';`);
+        else
+            return db.query(`select u.id, u.name, u.email, u.yob, u.gender, u.phone, u.address, t.price,
+            m.id as id_major, m.name as major_name, s.id_skill ,s.skill, s.skill_tag, u.avatarLink, t.evaluation, t.introduction, a.id_area, a.area
+            from users as u, (select * from tutors limit 5 offset ${5 * skip}) as t, areas as a, skills as s, skill_table as sc, majors as m
+            where u.id = t.id_user and u.role = 1 and t.areaCode = a.id_area and m.id = t.major and sc.id_teacher = u.id and sc.skill_code = s.id_skill
+            and u.status = 1 and a.area like '%${area}%' and m.name like '%${major}%' and u.name like '%${name}%';`);
     }
 }
