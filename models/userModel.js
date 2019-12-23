@@ -65,6 +65,9 @@ module.exports = {
     recoverPassword: (id, newPassword) => {
         return db.query(`update users set password = '${newPassword}' where id = ${id}`);
     },
+    getTutorCount:() => {
+        return db.query(`select COUNT(*) as count from tutors`);
+    },
     getTutorList: (area, price, major, name, skip) => {
         if (price > 0)
             return db.query(`select u.id, u.name, u.email, u.yob, u.gender, u.phone, u.address, t.price,
@@ -73,7 +76,7 @@ module.exports = {
             where u.id = t.id_user and u.role = 1 and t.areaCode = a.id_area and m.id = t.major and sc.id_teacher = u.id and sc.skill_code = s.id_skill
             and u.status = 1 and a.area like '%${area}%' and t.price <= ${price} and m.name like '%${major}%' and u.name like '%${name}%';`);
         else
-            return db.query(`select u.id, u.name, u.email, u.yob, u.gender, u.phone, u.address, t.price,
+            return db.query(`select u.id, u.name, u.email, u.yob, u.gender, u.phone, u.address, t.evaluation, t.price,
             m.id as id_major, m.name as major_name, s.id_skill ,s.skill, s.skill_tag, u.avatarLink, t.evaluation, t.introduction, a.id_area, a.area
             from users as u, (select * from tutors limit 5 offset ${5 * skip}) as t, areas as a, skills as s, skill_table as sc, majors as m
             where u.id = t.id_user and u.role = 1 and t.areaCode = a.id_area and m.id = t.major and sc.id_teacher = u.id and sc.skill_code = s.id_skill

@@ -15,7 +15,7 @@ var createConnection = () => {
         host: 'localhost',
         port: '3306',
         user: 'root',
-        password: '30111998',
+        password: '',
         database: 'uber_tutor_admin',
         dateStrings: true,
         timezone: 'Z',

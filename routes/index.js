@@ -373,7 +373,7 @@ router.get('/getMajors', (req, res) => {
       res.json(data);
     })
     .catch((error) => {
-      res.end('Có lỗi');
+      res.json(err);
     });
 })
 
@@ -567,13 +567,12 @@ router.get('/getTopTutor', (req, res) => {
     })
 })
 
-router.get('/getTutorList', (req, res) => {
+router.post('/getTutorList', (req, res) => {
   let { area, price, major, name, page} = req.body;
   price = Number.parseInt(req.body.price);
   userModel.getTutorList(area, price, major, name, page)
     .then(data => {
       const tutors = _.groupBy(data, "id");
-      console.log(JSON.parse(JSON.stringify(tutors)));
       var final = [];
       _.forEach(tutors, (value, key) => {
         const skills = _.map(value, item => {
@@ -590,6 +589,7 @@ router.get('/getTutorList', (req, res) => {
           area: value[0].area,
           phone: value[0].phone,
           price: value[0].price,
+          evaluation: value[0].evaluation,
           avatarLink: value[0].avatarLink,
           id_major: value[0].id_major,
           major_name: value[0].major_name,
@@ -597,7 +597,6 @@ router.get('/getTutorList', (req, res) => {
         }
         final.push(temp);
       })
-      console.log(final);
       res.json({
         code: 1,
         info: {
@@ -619,13 +618,9 @@ router.get('/getTutorList', (req, res) => {
     })
 })
 
-router.get('/getContracts', (req, res) => {
-  let {id, key, page} = req.body;
-  id = Number.parseInt(id);
-  key = Number.parseInt(key);
-  page = Number.parseInt(page);
-  contractModel.getContracts(id, key, page)
-  .then( data => {
+router.get('/getTutorsCount',(req,res)=>{
+  userModel.getTutorCount()
+  .then(data=>{
     res.json({
       code: 1,
       info: {
@@ -646,6 +641,111 @@ router.get('/getContracts', (req, res) => {
     })
   })
 })
+
+router.post('/getContracts', (req, res) => {
+  let {id, key, page} = req.body;
+  id = Number.parseInt(id);
+  key = Number.parseInt(key);
+  page = Number.parseInt(page);
+  contractModel.getContracts(id, key)
+  .then( data => {
+    let count = data.length;
+    data = data.slice(page*2,page*2+2);
+    res.json({
+      code: 1,
+      info: {
+        total: count,
+        data,
+        token: null,
+        message: "Get successfully",
+      }
+    })
+  })
+  .catch( err => {
+    res.json({
+      code: 0,
+      info: {
+        data: null,
+        token: null,
+        message: err,
+      }
+    })
+  })
+})
+
+// router.post('/getContractsCount', (req, res) => {
+//   let {id, key} = req.body;
+//   id = Number.parseInt(id);
+//   key = Number.parseInt(key);
+//   contractModel.getContractsCount(id, key)
+//   .then( data => {
+//     res.json({
+//       code: 1,
+//       info: {
+//         data,
+//         token: null,
+//         message: "Get successfully",
+//       }
+//     })
+//   })
+//   .catch( err => {
+//     res.json({
+//       code: 0,
+//       info: {
+//         data: null,
+//         token: null,
+//         message: err,
+//       }
+//     })
+//   })
+// })
+
+router.post('/getTutorDetail', function (req, res, next) {
+  
+  userModel.getTutorDetail(req.body.id)
+    .then(data => {
+      userModel.getTutorSkills(req.body.id)
+        .then(skills => {
+          // var userData = data[0];
+          const payload = { id: req.body.id };
+          let token = jwt.sign(payload, '1612018_1612175');
+          console.log(data);
+          
+          res.json({
+            code: 1,
+            info: {
+              data: data[0],
+              skills,
+              token,
+              message: "Get details successfully"
+            }
+          });
+        })
+        .catch(err => {
+          console.log(err);
+          res.json({
+            code: 0,
+            info: {
+              data: null,
+              token: null,
+              message: err,
+            }
+          })
+        })
+    }).catch(err => {
+      console.log(err);
+      res.json({
+        code: 0,
+        info: {
+          data: null,
+          token: null,
+          message: err,
+        }
+      })
+    })
+  
+});
+
 
 module.exports = router;
 
