@@ -315,7 +315,7 @@ router.post('/contractNotice', (req, res) => {
   const mailOptions = {
     from: EMAIL_USERNAME,
     to: `${email}`,
-    subject: 'Link To Activate Your Account',
+    subject: 'Contract proposal',
     html: `<p>A learner would like to hire you as his/ her tutor.</p>
     <p>Click on the following link to view the contract:</p>
     <a href='${contractDetail}'>${contractDetail}</a><br/>
@@ -332,29 +332,64 @@ router.post('/contractNotice', (req, res) => {
   });
 })
 
-router.put('/agree', (req, res) => {
-  let {id_contract, id_tutor} = req.body;
-  id_contract = Number.parseInt(id_contract);
-  id_tutor = Number.parseInt(id_tutor);
-  contractModel.agreeToContract(id_contract, id_tutor)
-  .then(data => {
-    res.json({
-      code: 1,
-      info: {
-        data,
-        message: 'Contract ' + id_contract + ' accepted by tutor id: ' + id_tutor,
-      }
+router.post('/endContract', (req, res) => {
+  let { id_contract, rating, complain, feedback } = req.body;
+  contractModel.getContractDetail(id_contract)
+    .then(details => {
+      contractModel.endContract(id_contract, rating, complain, feedback)
+        .then(response => {
+          contractModel.getRating(details[0].id_tutor)
+            .then(avg => {
+              avg = Number.parseFloat(avg[0].avg);
+              userModel.calculateEvaluation(details[0].id_tutor, avg)
+                .then(data => {
+                  res.json({
+                    code: 1,
+                    info: {
+                      data,
+                      message: "Contract ended, evaluation updated",
+                    }
+                  })
+                })
+                .catch(err => {
+                  res.json({
+                    code: 0,
+                    info: {
+                      message: "Failed1 ",
+                      err,
+                    }
+                  })
+                })
+            })
+            .catch(err => {
+              res.json({
+                code: 0,
+                info: {
+                  message: "Failed2 ",
+                  err,
+                }
+              })
+            })
+        })
+        .catch(err => {
+          res.json({
+            code: 0,
+            info: {
+              message: "Failed3 ",
+              err,
+            }
+          })
+        })
     })
-  })
-  .catch(err => {
-    res.json({
-      code: 0,
-      info: {
-        data: err,
-        message: 'Failed to accept!',
-      }
+    .catch(err => {
+      res.json({
+        code: 0,
+        info: {
+          message: "Failed4 ",
+          err,
+        }
+      })
     })
-  })
 })
 
 module.exports = router;

@@ -89,5 +89,8 @@ module.exports = {
         else {
             return db.query(`insert into skill_table (id_teacher, skill_code) values (${id}, ${skill})`);
         }
+    },
+    calculateEvaluation: (id, avgRating) => {
+        return db.query(`update tutors set evaluation = ${avgRating} where id_user = ${id}`)
     }
 }

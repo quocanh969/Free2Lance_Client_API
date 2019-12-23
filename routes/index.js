@@ -718,6 +718,128 @@ router.post('/getTutorDetail', function (req, res, next) {
 
 });
 
+router.post('/reject', (req, res) => {
+  let { id_contract } = req.body;
+  id_contract = Number.parseInt(id_contract);
+  contractModel.getContractDetail(id_contract)
+    .then(details => {
+      let learnerEmail = details[0].learner_email;
+      console.log(learnerEmail);
+      contractModel.rejectContract(id_contract)
+        .then(data => {
+          const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+              user: `${EMAIL_USERNAME}`,
+              pass: `${EMAIL_PASSWORD}`,
+            },
+          });
+
+          const mailOptions = {
+            from: `${EMAIL_USERNAME}`,
+            to: `${learnerEmail}`,
+            subject: 'Contract rejected',
+            text:
+              `The tutor you required has rejected to your proposal.\n\n`
+              + `Try finding another one! \n\n`
+              + `Thank you for using our service`,
+          };
+
+          transporter.sendMail(mailOptions, (err, response) => {
+            if (err) {
+              res.json({ message: 'Notification sent failed', code: 0 });
+            } else {
+              res.json({
+                code: 1,
+                info: {
+                  message: 'Contract ' + id_contract + ' rejected by tutor id: ' + details[0].tutor_email,
+                }
+              })
+            }
+          })
+        })
+        .catch(err => {
+          res.json({
+            code: 0,
+            info: {
+              data: err,
+              message: 'Failed to reject!',
+            }
+          })
+        })
+    })
+    .catch(err => {
+      res.json({
+        code: 0,
+        info: {
+          data: err,
+          message: 'Failed to reject!',
+        }
+      })
+    })
+})
+
+router.post('/agree', (req, res) => {
+
+  let { id_contract } = req.body;
+  id_contract = Number.parseInt(id_contract);
+  contractModel.getContractDetail(id_contract)
+    .then(details => {
+      let learnerEmail = details[0].learner_email;
+      // console.log(learnerEmail);
+      contractModel.agreeToContract(id_contract)
+        .then(data => {
+          const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+              user: `${EMAIL_USERNAME}`,
+              pass: `${EMAIL_PASSWORD}`,
+            },
+          });
+
+          const mailOptions = {
+            from: `${EMAIL_USERNAME}`,
+            to: `${learnerEmail}`,
+            subject: 'Contract agreed',
+            text:
+              `The tutor you required has agreed to your proposal.\n\n`
+              + `Your contract start from today! \n\n`
+              + `Thank you for using our service`,
+          };
+
+          transporter.sendMail(mailOptions, (err, response) => {
+            if (err) {
+              res.json({ message: 'Notification sent failed', code: 0 });
+            } else {
+              res.json({
+                code: 1,
+                info: {
+                  message: 'Contract ' + id_contract + ' accepted by tutor id: ' + details[0].tutor_email,
+                }
+              })
+            }
+          })
+        })
+        .catch(err => {
+          res.json({
+            code: 0,
+            info: {
+              data: err,
+              message: 'Failed to accept!',
+            }
+          })
+        })
+    })
+    .catch(err => {
+      res.json({
+        code: 0,
+        info: {
+          data: err,
+          message: 'Failed to accept!',
+        }
+      })
+    })
+})
 
 module.exports = router;
 
