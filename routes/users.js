@@ -4,7 +4,10 @@ var userModel = require('../models/userModel');
 var contractModel = require('../models/contractModel');
 
 var jwt = require('jsonwebtoken');
+var nodemailer = require('nodemailer');
 var passport = require('passport');
+const EMAIL_USERNAME = "ubertutor018175";
+const EMAIL_PASSWORD = "Ubertutor123";
 
 /* GET users listing. */
 router.get('/', function (req, res, next) {
@@ -259,6 +262,99 @@ router.post('/newContract', (req, res) => {
         }
       })
     })
+})
+
+router.post('/editSkill', (req, res) => {
+  var skill = req.body.id_skill;
+  var type = Number.parseInt(req.body.type);
+  var id = req.body.id;
+  userModel.editSkill(id, skill, type)
+    .then(data => {
+      res.json({
+        code: 1,
+        info: {
+          data,
+          message: (type === 1 ? "Added" : "Removed") + " successfully",
+        }
+      })
+    })
+    .catch(err => {
+      if (err.code === "ER_DUP_ENTRY")
+        res.json({
+          code: 0,
+          info: {
+            data: null,
+            message: "Skill already added",
+          }
+        })
+      else
+        res.json({
+          code: 0,
+          info: {
+            data: null,
+            message: (type === 1 ? "Added" : "Removed") + " failed",
+          }
+        })
+    })
+})
+
+router.post('/contractNotice', (req, res) => {
+  var id_contract = req.body.id_contract;
+  var email = req.body.email;
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: `${EMAIL_USERNAME}`,
+      pass: `${EMAIL_PASSWORD}`,
+    },
+  });
+  var contractDetail = `http://localhost:3000/contract-details/id=${id_contract}`;
+  var agreeUrl = `http://localhost:3000/replyContract/id=${id_contract}&reply=${1}`;
+  var disagreeUrl = `http://localhost:3000/replyContract/id=${id_contract}&reply=${0}`;
+
+  const mailOptions = {
+    from: EMAIL_USERNAME,
+    to: `${email}`,
+    subject: 'Link To Activate Your Account',
+    html: `<p>A learner would like to hire you as his/ her tutor.</p>
+    <p>Click on the following link to view the contract:</p>
+    <a href='${contractDetail}'>${contractDetail}</a><br/>
+    <p>Do you agree to receive this job</p><br/>
+    <button style="background-color:green;padding:10px;width:150px;border:none;cursor:pointer"><a href='${agreeUrl}' style="color:white;font-size:25px;text-decoration:none">Yes</a></button>
+    <button style="background-color:red;padding:10px;width:150px;border:none;cursor:pointer"><a href='${disagreeUrl}' style="color:white;font-size:25px;text-decoration:none">No</a></button>`,
+  };
+  transporter.sendMail(mailOptions, (err, response) => {
+    if (err) {
+      res.json({ message: 'Notification sent failed', code: 0 });
+    } else {
+      res.json({ message: 'Notification sent', code: 1 });
+    }
+  });
+})
+
+router.put('/agree', (req, res) => {
+  let {id_contract, id_tutor} = req.body;
+  id_contract = Number.parseInt(id_contract);
+  id_tutor = Number.parseInt(id_tutor);
+  contractModel.agreeToContract(id_contract, id_tutor)
+  .then(data => {
+    res.json({
+      code: 1,
+      info: {
+        data,
+        message: 'Contract ' + id_contract + ' accepted by tutor id: ' + id_tutor,
+      }
+    })
+  })
+  .catch(err => {
+    res.json({
+      code: 0,
+      info: {
+        data: err,
+        message: 'Failed to accept!',
+      }
+    })
+  })
 })
 
 module.exports = router;

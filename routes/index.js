@@ -426,6 +426,7 @@ router.post('/recoverPassword', (req, res) => {
             pass: `${EMAIL_PASSWORD}`,
           },
         });
+        var url = `http://localhost:3000/recover-password/token=${token}&id=${user[0].id}`;
         const mailOptions = {
           from: EMAIL_USERNAME,
           to: `${user[0].email}`,
@@ -434,9 +435,7 @@ router.post('/recoverPassword', (req, res) => {
             'You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n'
             + 'Please click on the following link, or paste this into your browser to complete the process within one hour of receiving it:\n\n'
 
-            + `http://localhost:3000/recover-password/token=${token}&id=${user[0].id}\n\n`
-
-            + 'If you did not request this, please ignore this email and your password will remain unchanged.\n',
+            + `http://localhost:3000/recover-password/token=${token}&id=${user[0].id}\n\n`,
         };
         transporter.sendMail(mailOptions, (err, response) => {
           if (err) {
@@ -568,7 +567,7 @@ router.get('/getTopTutor', (req, res) => {
 })
 
 router.post('/getTutorList', (req, res) => {
-  let { area, price, major, name, page} = req.body;
+  let { area, price, major, name, page } = req.body;
   price = Number.parseInt(req.body.price);
   userModel.getTutorList(area, price, major, name, page)
     .then(data => {
@@ -618,90 +617,63 @@ router.post('/getTutorList', (req, res) => {
     })
 })
 
-router.get('/getTutorsCount',(req,res)=>{
+router.get('/getTutorsCount', (req, res) => {
   userModel.getTutorCount()
-  .then(data=>{
-    res.json({
-      code: 1,
-      info: {
-        data,
-        token: null,
-        message: "Get successfully",
-      }
+    .then(data => {
+      res.json({
+        code: 1,
+        info: {
+          data,
+          token: null,
+          message: "Get successfully",
+        }
+      })
     })
-  })
-  .catch( err => {
-    res.json({
-      code: 0,
-      info: {
-        data: null,
-        token: null,
-        message: err,
-      }
+    .catch(err => {
+      res.json({
+        code: 0,
+        info: {
+          data: null,
+          token: null,
+          message: err,
+        }
+      })
     })
-  })
 })
 
 router.post('/getContracts', (req, res) => {
-  let {id, key, page} = req.body;
+  let { id, key, page } = req.body;
   id = Number.parseInt(id);
   key = Number.parseInt(key);
   page = Number.parseInt(page);
   contractModel.getContracts(id, key)
-  .then( data => {
-    let count = data.length;
-    data = data.slice(page*2,page*2+2);
-    res.json({
-      code: 1,
-      info: {
-        total: count,
-        data,
-        token: null,
-        message: "Get successfully",
-      }
+    .then(data => {
+      let count = data.length;
+      data = data.slice(page * 4, page * 4 + 4);
+      res.json({
+        code: 1,
+        info: {
+          total: count,
+          data,
+          token: null,
+          message: "Get successfully",
+        }
+      })
     })
-  })
-  .catch( err => {
-    res.json({
-      code: 0,
-      info: {
-        data: null,
-        token: null,
-        message: err,
-      }
+    .catch(err => {
+      res.json({
+        code: 0,
+        info: {
+          data: null,
+          token: null,
+          message: err,
+        }
+      })
     })
-  })
 })
 
-// router.post('/getContractsCount', (req, res) => {
-//   let {id, key} = req.body;
-//   id = Number.parseInt(id);
-//   key = Number.parseInt(key);
-//   contractModel.getContractsCount(id, key)
-//   .then( data => {
-//     res.json({
-//       code: 1,
-//       info: {
-//         data,
-//         token: null,
-//         message: "Get successfully",
-//       }
-//     })
-//   })
-//   .catch( err => {
-//     res.json({
-//       code: 0,
-//       info: {
-//         data: null,
-//         token: null,
-//         message: err,
-//       }
-//     })
-//   })
-// })
-
 router.post('/getTutorDetail', function (req, res, next) {
-  
+
   userModel.getTutorDetail(req.body.id)
     .then(data => {
       userModel.getTutorSkills(req.body.id)
@@ -710,7 +682,7 @@ router.post('/getTutorDetail', function (req, res, next) {
           const payload = { id: req.body.id };
           let token = jwt.sign(payload, '1612018_1612175');
           console.log(data);
-          
+
           res.json({
             code: 1,
             info: {
@@ -743,7 +715,7 @@ router.post('/getTutorDetail', function (req, res, next) {
         }
       })
     })
-  
+
 });
 
 

@@ -14,5 +14,9 @@ module.exports = {
     CreateContract: (id, body) => {
         return db.query(`insert into contracts (id_learner, id_tutor, StartDate, EndDate, totalPrice, status, complain, feedback, rating, DueDate, major)
         values(${body.id}, ${null}, ${null}, ${null}, ${null}, 0, '', '', ${0}, ${null}, ${1});`)
+    },
+    agreeToContract: (id_contract, id_tutor) => {
+        let today = new Date();
+        return db.query(`update contracts set id_tutor = ${id_tutor}, StartDate = ${today} where id = ${id_contract}`)
     }
 }

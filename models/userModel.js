@@ -81,5 +81,13 @@ module.exports = {
             from users as u, (select * from tutors limit 5 offset ${5 * skip}) as t, areas as a, skills as s, skill_table as sc, majors as m
             where u.id = t.id_user and u.role = 1 and t.areaCode = a.id_area and m.id = t.major and sc.id_teacher = u.id and sc.skill_code = s.id_skill
             and u.status = 1 and a.area like '%${area}%' and m.name like '%${major}%' and u.name like '%${name}%';`);
+    },
+    editSkill: (id, skill, type) => {
+        if (type === 0) {
+            return db.query(`delete from skill_table where id_teacher = ${id} and skill_code = ${skill}`);
+        }
+        else {
+            return db.query(`insert into skill_table (id_teacher, skill_code) values (${id}, ${skill})`);
+        }
     }
 }
