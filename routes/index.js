@@ -596,9 +596,12 @@ router.post('/getTutorList', (req, res) => {
         }
         final.push(temp);
       })
+      let total = final.length;
+      final = final.slice(5*page, 5*page+5);
       res.json({
         code: 1,
         info: {
+          total,
           data: final,
           token: null,
           message: 1,
@@ -614,30 +617,6 @@ router.post('/getTutorList', (req, res) => {
           data: null
         }
       });
-    })
-})
-
-router.get('/getTutorsCount', (req, res) => {
-  userModel.getTutorCount()
-    .then(data => {
-      res.json({
-        code: 1,
-        info: {
-          data,
-          token: null,
-          message: "Get successfully",
-        }
-      })
-    })
-    .catch(err => {
-      res.json({
-        code: 0,
-        info: {
-          data: null,
-          token: null,
-          message: err,
-        }
-      })
     })
 })
 
