@@ -7,6 +7,7 @@ var crypto = require('crypto');
 var userModel = require('../models/userModel');
 var majorModel = require('../models/majorModel');
 var areaModel = require('../models/areaModel');
+var skillModel = require('../models/skillModel');
 var contractModel = require('../models/contractModel');
 
 
@@ -397,6 +398,19 @@ router.get('/getAreas', (req, res) => {
       res.end(err);
     })
 })
+
+
+router.get('/getSkills', (req, res) => {
+  skillModel.getSkills()
+    .then(data => {
+      res.json(data);
+    })
+    .catch(err => {
+      console.log(err);
+      res.end(err);
+    })
+})
+
 
 router.post('/recoverPassword', (req, res) => {
   var emailStr = req.body.email;

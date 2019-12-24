@@ -138,7 +138,7 @@ module.exports = {
     getTutorDetail: (id) => {
         return new Promise((resolve, reject) => {
             var sql = `select U.id, U.name, U.role, U.address, U.email, U.phone, U.gender, U.yob, U.avatarLink, 
-            T.price, T.levelTeaching, T.major, M.name, T.evaluation, T.successRate, T.areaCode, A.area
+            T.price, T.levelTeaching, T.major, M.name, T.evaluation, T.successRate, T.areaCode, A.area, T.introduction
             from users as U, tutors as T, majors as M, areas as A  
             where U.id = T.id_user and T.major = M.id and A.id_area = T.areaCode and 
             U.id = ${id} and U.role = ${1}`;
@@ -156,7 +156,7 @@ module.exports = {
     },
     updateBasicInfo: (id, info) => {
         return new Promise((resolve, reject) => {
-            var sql = `update users set name = '${info.name}', address = '${info.address}', phone = '${info.phone}', yob = '${info.yob}', avatarLink = '${info.avatarLink}', isEditting = ${false}
+            var sql = `update users set name = '${info.name}', address = '${info.address}', phone = '${info.phone}', yob = ${info.yob}, avatarLink = '${info.avatarLink}', gender = ${info.gender}, isEditting = ${false}
                     where id = ${id}`;
             var connection = createConnection();
             connection.connect();
