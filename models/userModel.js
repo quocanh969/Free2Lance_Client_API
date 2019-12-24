@@ -93,5 +93,8 @@ module.exports = {
     },
     calculateEvaluation: (id, avgRating) => {
         return db.query(`update tutors set evaluation = ${avgRating} where id_user = ${id}`)
+    },
+    getTutorCurrentPrice: (id) => {
+        return db.query(`select price from tutors where id_user = ${id}`);
     }
 }
