@@ -598,7 +598,7 @@ router.post('/getTutorList', (req, res) => {
         final.push(temp);
       })
       let total = final.length;
-      final = final.slice(5*page, 5*page+5);
+      final = final.slice(5 * page, 5 * page + 5);
       res.json({
         code: 1,
         info: {
@@ -627,6 +627,37 @@ router.post('/getContracts', (req, res) => {
   key = Number.parseInt(key);
   page = Number.parseInt(page);
   contractModel.getContracts(id, key)
+    .then(data => {
+      let count = data.length;
+      data = data.slice(page * 4, page * 4 + 4);
+      res.json({
+        code: 1,
+        info: {
+          total: count,
+          data,
+          token: null,
+          message: "Get successfully",
+        }
+      })
+    })
+    .catch(err => {
+      res.json({
+        code: 0,
+        info: {
+          data: null,
+          token: null,
+          message: err,
+        }
+      })
+    })
+})
+
+router.post('/getActiveContracts', (req, res) => {
+  let { id, key, page } = req.body;
+  id = Number.parseInt(id);
+  key = Number.parseInt(key);
+  page = Number.parseInt(page);
+  contractModel.getActiveContracts(id, key)
     .then(data => {
       let count = data.length;
       data = data.slice(page * 4, page * 4 + 4);

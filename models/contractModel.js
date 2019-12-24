@@ -9,7 +9,7 @@ module.exports = {
         }
         return db.query(`select c.*, u1.name as learner, u1.avatarLink, u2.name as learner, m.name as major_name
         from contracts as c, tutors as t, users as u1, users as u2, majors as m
-        where c.id_learner = u1.id and c.id_tutor = t.id_user and c.id_tutor = u2.id and c.major = m.id and ${key} = ${id}`);
+        where c.id_learner = u1.id and c.id_tutor = t.id_user and c.id_tutor = u2.id and c.major = m.id and ${key} = ${id} and c.status = ${2}`);
     },
     getRating: (id) => {
         return db.query(`select sum(rating)/count(id) as avg from contracts as c, tutors as t where c.id_tutor = t.id_user and c.status = ${2} and c.id_tutor = ${id}`);
@@ -46,5 +46,15 @@ module.exports = {
         if (date.length === 1) date = "0" + date;
         var fullDate = year + "-" + month + "-" + date;
         return db.query(`update contracts set EndDate = '${fullDate}', status = ${2}, rating = ${rating}, complain = '${complain}', feedback = '${feedback}', totalPrice = datediff(curdate(), StartDate) * totalPrice where id = ${id_contract} and status != ${2}`)
+    },
+    getActiveContracts: (id, key) => {
+        if (key === 0) {
+            key = "u1.id";
+        } else {
+            key = "t.id_user";
+        }
+        return db.query(`select c.*, u1.name as learner, u1.avatarLink, u2.name as learner, m.name as major_name
+        from contracts as c, tutors as t, users as u1, users as u2, majors as m
+        where c.id_learner = u1.id and c.id_tutor = t.id_user and c.id_tutor = u2.id and c.major = m.id and ${key} = ${id} and c.status = ${1}`);
     }
 }
