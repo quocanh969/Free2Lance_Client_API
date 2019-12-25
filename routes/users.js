@@ -277,9 +277,9 @@ router.post('/newContract', (req, res) => {
 })
 
 router.post('/editSkill', (req, res) => {
-  var skill = req.body.id_skill;
+  var skill = Number.parseInt(req.body.id_skill);
   var type = Number.parseInt(req.body.type);
-  var id = req.body.id;
+  var id = Number.parseInt(req.body.id);
   userModel.editSkill(id, skill, type)
     .then(data => {
       res.json({
@@ -305,6 +305,29 @@ router.post('/editSkill', (req, res) => {
           info: {
             data: null,
             message: (type === 1 ? "Added" : "Removed") + " failed",
+          }
+        })
+    })
+})
+
+router.post('/clearSkill', (req, res) => {
+  var id = Number.parseInt(req.body.id);
+  userModel.clearSkill(id)
+    .then(data => {
+      res.json({
+        code: 1,
+        info: {
+          data,
+          message: "Removed successfully",
+        }
+      })
+    })
+    .catch(err => {
+        res.json({
+          code: 0,
+          info: {
+            data: null,
+            message: "Removed failed",
           }
         })
     })

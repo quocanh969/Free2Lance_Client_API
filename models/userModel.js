@@ -47,7 +47,7 @@ module.exports = {
         return db.getTutorDetail(id);
     },
     getTutorSkills: (id) => {
-        return db.query(`select ST.skill_code, S.skill_tag, S.skill from skill_table as ST, skills as S 
+        return db.query(`select ST.skill_code, S.skill_tag, S.skill, S.id_skill from skill_table as ST, skills as S 
                         where ST.id_teacher = ${id} and ST.skill_code = S.id_skill and S.status = ${1}`);
     },
     getByID: (id) => {
@@ -90,6 +90,9 @@ module.exports = {
         else {
             return db.query(`insert into skill_table (id_teacher, skill_code) values (${id}, ${skill})`);
         }
+    },
+    clearSkill: (id) => {
+        return db.query(`delete from skill_table where id_teacher = ${id}`);
     },
     calculateEvaluation: (id, avgRating) => {
         return db.query(`update tutors set evaluation = ${avgRating} where id_user = ${id}`)
