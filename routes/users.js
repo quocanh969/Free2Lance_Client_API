@@ -14,8 +14,10 @@ router.get('/', function (req, res, next) {
   res.send('respond with a resource');
 });
 
-router.get('/getLearnerDetail', function (req, res, next) {
+router.post('/getLearnerDetail', function (req, res, next) {
   var curUser = JSON.stringify(req.user);
+  console.log(curUser);
+  console.log(req.body.id);
   if (JSON.parse(curUser).id === Number.parseInt(req.body.id)) {
     userModel.getLearnerDetail(req.body.id)
       .then(data => {
@@ -46,7 +48,7 @@ router.get('/getLearnerDetail', function (req, res, next) {
   }
 });
 
-router.put('/editPersonalInfo', function (req, res, next) {
+router.post('/editPersonalInfo', function (req, res, next) {
   var curUser = JSON.stringify(req.user);
   console.log(req.body.id);
   console.log(JSON.parse(curUser).id);
@@ -58,10 +60,10 @@ router.put('/editPersonalInfo', function (req, res, next) {
         if (body.avatarLink === null || body.avatarLink === undefined || body.avatarLink === '') body.avatarLink = responseData[0].avatarLink;
         if (body.address === null || body.address === undefined || body.address === '') body.address = responseData[0].address;
         if (body.yob === null || body.yob === undefined || body.yob === '') body.yob = responseData[0].yob;
-        console.log(body.name);
+        if (body.gender === null || body.gender === undefined || body.gender === '') body.gender = responseData[0].gender;
+        
         userModel.updateBasicInfo(body.id, body)
           .then(data => {
-            console.log(body.name);
             const payload = { id: body.id };
             let token = jwt.sign(payload, '1612018_1612175');
             res.json({
@@ -107,7 +109,7 @@ router.put('/editPersonalInfo', function (req, res, next) {
   }
 })
 
-router.put('/editProfessionalInfo', function (req, res, next) {
+router.post('/editProfessionalInfo', function (req, res, next) {
   var curUser = JSON.stringify(req.user);
   console.log(req.body.id);
   console.log(JSON.parse(curUser).id);
@@ -275,9 +277,9 @@ router.post('/newContract', (req, res) => {
 })
 
 router.post('/editSkill', (req, res) => {
-  var skill = req.body.id_skill;
+  var skill = Number.parseInt(req.body.id_skill);
   var type = Number.parseInt(req.body.type);
-  var id = req.body.id;
+  var id = Number.parseInt(req.body.id);
   userModel.editSkill(id, skill, type)
     .then(data => {
       res.json({
@@ -303,6 +305,29 @@ router.post('/editSkill', (req, res) => {
           info: {
             data: null,
             message: (type === 1 ? "Added" : "Removed") + " failed",
+          }
+        })
+    })
+})
+
+router.post('/clearSkill', (req, res) => {
+  var id = Number.parseInt(req.body.id);
+  userModel.clearSkill(id)
+    .then(data => {
+      res.json({
+        code: 1,
+        info: {
+          data,
+          message: "Removed successfully",
+        }
+      })
+    })
+    .catch(err => {
+        res.json({
+          code: 0,
+          info: {
+            data: null,
+            message: "Removed failed",
           }
         })
     })
