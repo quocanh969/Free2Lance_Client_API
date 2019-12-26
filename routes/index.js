@@ -635,6 +635,32 @@ router.post('/getTutorList', (req, res) => {
     })
 })
 
+router.post('/getContractDetail', (req, res) => {
+  let { id } = req.body;
+  id = Number.parseInt(id);
+  contractModel.getContractDetail(id)
+    .then(data => {
+      res.json({
+        code: 1,
+        info: {
+          data,
+          token: null,
+          message: "Get successfully",
+        }
+      })
+    })
+    .catch(err => {
+      res.json({
+        code: 0,
+        info: {
+          data: null,
+          token: null,
+          message: err,
+        }
+      })
+    })
+})
+
 router.post('/getContracts', (req, res) => {
   let { id, key, page } = req.body;
   id = Number.parseInt(id);

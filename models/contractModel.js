@@ -15,7 +15,7 @@ module.exports = {
         return db.query(`select sum(rating)/count(id) as avg from contracts as c, tutors as t where c.id_tutor = t.id_user and c.status = ${2} and c.id_tutor = ${id}`);
     },
     getContractDetail: (id) => {
-        return db.query(`select c.*, u1.email as learner_email, u2.email as tutor_email from contracts as c, users as u1, users as u2
+        return db.query(`select c.*, u1.email as learner_email, u2.email as tutor_email, u1.name as learner_name, u2.name as tutor_name from contracts as c, users as u1, users as u2
                         where c.id_learner = u1.id and c.id_tutor = u2.id and c.id = ${id}`);
     },
     CreateContract: (id, body, currentPrice) => {
