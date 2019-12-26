@@ -12,12 +12,12 @@ var createConnection = () => {
         dateStrings: true,
         timezone: 'Z',
         */
-        host: 'localhost',
+        host: 'remotemysql.com',
         port: '3306',
-        user: 'root',
+        user: 'LdOe2JLqt9',
         //password: '30111998',
-        password: '',
-        database: 'uber_tutor_admin',
+        password: 'cAMxQWpQ7U',
+        database: 'LdOe2JLqt9',
         dateStrings: true,
         timezone: 'Z',
 
