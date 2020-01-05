@@ -385,11 +385,11 @@ router.post('/cancelContract', (req, res) => {
       const mailOptions = {
         from: EMAIL_USERNAME,
         to: `${email}`,
-        subject: 'Contract cancel',
+        subject: 'Contract cancelled',
         html: `
-        <p>A learner ${name} has ended the contract between you and he/she.</p>
-        <p>From now, you are not his/her tutor.</p>
-        <p>We are very sorry to hear that, we wish you will have another contract that suitable for you</p>
+        <p>We are sorry to inform you that ${name} has just ended a contract with you.</p>
+        <p>We hope you soon get to strike another deal with other learners. If there is anything you still wondering, please let us know!</p>
+        <p>Have a nice day.</p>
         `,
       };
       transporter.sendMail(mailOptions, (err, response) => {
