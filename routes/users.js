@@ -367,6 +367,112 @@ router.post('/contractNotice', (req, res) => {
   });
 })
 
+router.post('/cancelContract', (req, res) => {
+  var id = Number.parseInt(req.body.id);
+  var email = req.body.tutor_email;
+  var name = req.body.learner_name;
+  contractModel.cancelContract(id)
+    .then(data => {
+
+      const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: `${EMAIL_USERNAME}`,
+          pass: `${EMAIL_PASSWORD}`,
+        },
+      });
+    
+      const mailOptions = {
+        from: EMAIL_USERNAME,
+        to: `${email}`,
+        subject: 'Contract cancel',
+        html: `
+        <p>A learner ${name} has ended the contract between you and he/she.</p>
+        <p>From now, you are not his/her tutor.</p>
+        <p>We are very sorry to hear that, we wish you will have another contract that suitable for you</p>
+        `,
+      };
+      transporter.sendMail(mailOptions, (err, response) => {
+        if (err) {
+          res.json({ message: 'Notification sent failed', code: 0 });
+        } else {
+          res.json({ message: 'Notification sent', code: 1 });
+        }
+      });
+
+      res.json({
+        code: 1,
+        info: {
+          data,
+          message: "Cancel contract successfully",
+        }
+      })
+    })
+    .catch(err => {
+        res.json({
+          code: 0,
+          info: {
+            data: null,
+            message: "Cancel contract failed",
+          }
+        })
+    })
+})
+
+router.post('/updateContract', (req, res) => {
+  var id = Number.parseInt(req.body.id);
+  var feedback = req.body.feedback;
+  var description = req.body.description;
+  var rating = Number.parseInt(req.body.rating);
+  contractModel.updateContract(id, feedback, rating, description)
+    .then(data => {
+      console.log(data);
+      res.json({
+        code: 1,
+        info: {
+          data,
+          message: "Update contract successfully",
+        }
+      })
+    })
+    .catch(err => {
+      console.log(err);
+        res.json({
+          code: 0,
+          info: {
+            data: null,
+            message: "Update contract failed",
+          }
+        })
+    })
+})
+
+router.post('/complainContract', (req, res) => {
+  var id = Number.parseInt(req.body.id);
+  var complain = req.body.complain;
+  contractModel.complainContract(id, complain)
+    .then(data => {
+      console.log(data);
+      res.json({
+        code: 1,
+        info: {
+          data,
+          message: "Complain contract successfully",
+        }
+      })
+    })
+    .catch(err => {
+      console.log(err);
+        res.json({
+          code: 0,
+          info: {
+            data: null,
+            message: "Complain contract failed",
+          }
+        })
+    })
+})
+
 router.post('/endContract', (req, res) => {
   let { id_contract, rating, complain, feedback } = req.body;
   contractModel.getContractDetail(id_contract)

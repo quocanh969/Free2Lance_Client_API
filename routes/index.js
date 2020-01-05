@@ -385,7 +385,8 @@ router.get('/getTopMajors', (req, res) => {
       res.json(data);
     })
     .catch((error) => {
-      res.end('Có lỗi');
+      console.log(error);
+      res.json(error);
     });
 })
 

@@ -47,6 +47,15 @@ module.exports = {
         var fullDate = year + "-" + month + "-" + date;
         return db.query(`update contracts set EndDate = '${fullDate}', status = ${2}, rating = ${rating}, complain = '${complain}', feedback = '${feedback}', totalPrice = datediff(curdate(), StartDate) * totalPrice where id = ${id_contract} and status != ${2}`)
     },
+    cancelContract: (id_contract) => {
+        return db.query(`update contracts set status = 0 where id = ${id_contract}`);
+    },
+    updateContract: (id_contract, feedback, rating, description) => {        
+        return db.query(`update contracts set feedback='${feedback}', rating=${rating}, description='${description}' where id = ${id_contract}`);
+    },
+    complainContract: (id_contract, complain) => {        
+        return db.query(`update contracts set complain='${complain}' where id = ${id_contract}`);
+    },
     getActiveContracts: (id, key) => {
         if (key === 0) {
             key = "u1.id";

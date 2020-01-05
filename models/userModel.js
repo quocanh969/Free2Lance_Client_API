@@ -8,9 +8,9 @@ module.exports = {
     },
     getByEmail: (email, status) => {
         if (status === null)
-            return db.query(`SELECT * FROM USERs WHERE email = '${email}' and isActivated = ${true}`);
+            return db.query(`SELECT * FROM USERs WHERE email = '${email}' and status = ${true}`);
         else
-            return db.query(`SELECT * FROM USERs WHERE email = '${email}' and status= ${status} and isActivated = ${true}`);
+            return db.query(`SELECT * FROM USERs WHERE email = '${email}' and status= ${status}`);
     },
     getByFacebookId: id => {
         return db.query(`SELECT * FROM USERs WHERE accType = 1 AND id_social = '${id}' and status=${true}`);
