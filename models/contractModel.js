@@ -19,8 +19,8 @@ module.exports = {
                         where c.id_learner = u1.id and c.id_tutor = u2.id and c.id = ${id}`);
     },
     CreateContract: (id, body, currentPrice) => {
-        return db.query(`insert into contracts (id_learner, id_tutor, StartDate, EndDate, totalPrice, status, complain, feedback, rating, major, description)
-        values(${body.id}, ${body.id_tutor}, ${null}, ${null}, ${currentPrice}, ${0}, '', '', ${0}, ${body.major}, '${body.description}');`)
+        return db.query(`insert into contracts (id_learner, id_tutor, StartDate, EndDate, EstimatedEndDate, totalPrice, status, complain, feedback, rating, major, description)
+        values(${body.id}, ${body.id_tutor}, ${null}, ${null}, ${body.estimatedEndDate}, ${currentPrice}, ${0}, '', '', ${0}, ${body.major}, '${body.description}');`)
     },
     agreeToContract: (id_contract) => {
         let today = new Date();
