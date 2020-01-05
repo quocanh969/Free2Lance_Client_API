@@ -45,7 +45,7 @@ module.exports = {
         if (month.length === 1) month = "0" + month;
         if (date.length === 1) date = "0" + date;
         var fullDate = year + "-" + month + "-" + date;
-        return db.query(`update contracts set EndDate = '${fullDate}', status = ${2}, rating = ${rating}, complain = '${complain}', feedback = '${feedback}', totalPrice = datediff(curdate(), StartDate) * totalPrice where id = ${id_contract} and status != ${2}`)
+        return db.query(`update contracts set EndDate = '${fullDate}', status = ${2}, rating = ${rating}, complain = '${complain}', feedback = '${feedback}', totalPrice = ceiling((datediff(curdate(), StartDate))/3) * totalPrice where id = ${id_contract} and status != ${2}`)
     },
     cancelContract: (id_contract) => {
         return db.query(`update contracts set status = 0 where id = ${id_contract}`);
