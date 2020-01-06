@@ -19,8 +19,8 @@ module.exports = {
                         where c.id_learner = u1.id and c.id_tutor = u2.id and c.id = ${id}`);
     },
     CreateContract: (id, body, currentPrice) => {
-        return db.query(`insert into contracts (id_learner, id_tutor, StartDate, EndDate, totalPrice, status, complain, feedback, rating, major, description)
-        values(${body.id}, ${body.id_tutor}, ${null}, ${null}, ${currentPrice}, ${0}, '', '', ${0}, ${body.major}, '${body.description}');`)
+        return db.query(`insert into contracts (id_learner, id_tutor, StartDate, EndDate, EstimatedEndDate, totalPrice, status, complain, feedback, rating, major, description)
+        values(${body.id}, ${body.id_tutor}, ${null}, ${null}, ${body.estimatedEndDate}, ${currentPrice}, ${0}, '', '', ${0}, ${body.major}, '${body.description}');`)
     },
     agreeToContract: (id_contract) => {
         let today = new Date();
@@ -45,7 +45,7 @@ module.exports = {
         if (month.length === 1) month = "0" + month;
         if (date.length === 1) date = "0" + date;
         var fullDate = year + "-" + month + "-" + date;
-        return db.query(`update contracts set EndDate = '${fullDate}', status = ${2}, rating = ${rating}, complain = '${complain}', feedback = '${feedback}', totalPrice = datediff(curdate(), StartDate) * totalPrice where id = ${id_contract} and status != ${2}`)
+        return db.query(`update contracts set EndDate = '${fullDate}', status = ${2}, rating = ${rating}, complain = '${complain}', feedback = '${feedback}', totalPrice = ceiling((datediff(curdate(), StartDate))/3) * totalPrice where id = ${id_contract} and status != ${2}`)
     },
     complainContract: (id_contract, complain) => {        
         return db.query(`update contracts set complain='${complain}' where id = ${id_contract}`);
