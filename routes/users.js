@@ -419,34 +419,6 @@ router.post('/cancelContract', (req, res) => {
     })
 })
 
-router.post('/updateContract', (req, res) => {
-  var id = Number.parseInt(req.body.id);
-  var feedback = req.body.feedback;
-  var description = req.body.description;
-  var rating = Number.parseInt(req.body.rating);
-  contractModel.updateContract(id, feedback, rating, description)
-    .then(data => {
-      console.log(data);
-      res.json({
-        code: 1,
-        info: {
-          data,
-          message: "Update contract successfully",
-        }
-      })
-    })
-    .catch(err => {
-      console.log(err);
-        res.json({
-          code: 0,
-          info: {
-            data: null,
-            message: "Update contract failed",
-          }
-        })
-    })
-})
-
 router.post('/complainContract', (req, res) => {
   var id = Number.parseInt(req.body.id);
   var complain = req.body.complain;
