@@ -47,23 +47,46 @@ module.exports = {
         var fullDate = year + "-" + month + "-" + date;
         return db.query(`update contracts set EndDate = '${fullDate}', status = ${2}, rating = ${rating}, complain = '${complain}', feedback = '${feedback}', totalPrice = ceiling((datediff(curdate(), StartDate))/3) * totalPrice where id = ${id_contract} and status != ${2}`)
     },
-    complainContract: (id_contract, complain) => {        
+    complainContract: (id_contract, complain) => {
         return db.query(`update contracts set complain='${complain}' where id = ${id_contract}`);
     },
     getActiveContracts: (id, key) => {
         if (key === 0) {
             key = "c.id_learner";
         } else {
-            key = "c.id_user";
+            key = "c.id_tutor";
         }
         return db.query(`select c.*, u1.name as learner, u1.avatarLink, u2.name as tutor, m.name as major_name
         from contracts as c, tutors as t, users as u1, users as u2, majors as m
         where c.id_learner = u1.id and c.id_tutor = t.id_user and c.id_tutor = u2.id and c.major = m.id and ${key} = ${id} and c.status = ${1}`);
+    },
+    getExpiredContracts: (id, key) => {
+        if (key === 0) {
+            key = "c.id_learner";
+        } else {
+            key = "c.id_tutor";
+        }
+        return db.query(`select c.*, u1.name as learner, u1.avatarLink, u2.name as tutor, m.name as major_name
+        from contracts as c, tutors as t, users as u1, users as u2, majors as m
+        where c.id_learner = u1.id and c.id_tutor = t.id_user and c.id_tutor = u2.id and c.major = m.id and ${key} = ${id} and c.status = ${3}`);
+    },
+    getPendingContracts: (id, key) => {
+        if (key === 0) {
+            key = "c.id_learner";
+        } else {
+            key = "c.id_tutor";
+        }
+        return db.query(`select c.*, u1.name as learner, u1.avatarLink, u2.name as tutor, m.name as major_name
+        from contracts as c, tutors as t, users as u1, users as u2, majors as m
+        where c.id_learner = u1.id and c.id_tutor = t.id_user and c.id_tutor = u2.id and c.major = m.id and ${key} = ${id} and c.status = ${0}`);
     },
     getIncomeReport: (id) => {
         return db.query(`select * from contracts where id_tutor = ${id} and status = 2`);
     },
     getIncomeFromLastNDays: (id, days) => {
         return db.query(`select * from contracts where status = ${2} and EndDate between curdate() - interval ${days} day and curdate() and id_tutor = ${id}`)
+    },
+    dueContracts: () => {
+        return db.query(`update constracts set status = ${3} where status = ${1} and datediff(curdate(), estimatedEndDate) >= 0`);
     }
 }

@@ -61,7 +61,7 @@ router.post('/editPersonalInfo', function (req, res, next) {
         if (body.address === null || body.address === undefined || body.address === '') body.address = responseData[0].address;
         if (body.yob === null || body.yob === undefined || body.yob === '') body.yob = responseData[0].yob;
         if (body.gender === null || body.gender === undefined || body.gender === '') body.gender = responseData[0].gender;
-        
+
         userModel.updateBasicInfo(body.id, body)
           .then(data => {
             const payload = { id: body.id };
@@ -323,13 +323,13 @@ router.post('/clearSkill', (req, res) => {
       })
     })
     .catch(err => {
-        res.json({
-          code: 0,
-          info: {
-            data: null,
-            message: "Removed failed",
-          }
-        })
+      res.json({
+        code: 0,
+        info: {
+          data: null,
+          message: "Removed failed",
+        }
+      })
     })
 })
 
@@ -381,7 +381,7 @@ router.post('/cancelContract', (req, res) => {
           pass: `${EMAIL_PASSWORD}`,
         },
       });
-    
+
       const mailOptions = {
         from: EMAIL_USERNAME,
         to: `${email}`,
@@ -409,13 +409,13 @@ router.post('/cancelContract', (req, res) => {
       })
     })
     .catch(err => {
-        res.json({
-          code: 0,
-          info: {
-            data: null,
-            message: "Cancel contract failed",
-          }
-        })
+      res.json({
+        code: 0,
+        info: {
+          data: null,
+          message: "Cancel contract failed",
+        }
+      })
     })
 })
 
@@ -435,13 +435,13 @@ router.post('/complainContract', (req, res) => {
     })
     .catch(err => {
       console.log(err);
-        res.json({
-          code: 0,
-          info: {
-            data: null,
-            message: "Complain contract failed",
-          }
-        })
+      res.json({
+        code: 0,
+        info: {
+          data: null,
+          message: "Complain contract failed",
+        }
+      })
     })
 })
 
@@ -552,6 +552,79 @@ router.get('/getIncomeReport', (req, res) => {
         })
       })
   }
+})
+
+router.put('/dueContracts', (req, res) => {
+  contractModel.dueContracts().then(data => {
+    res.json({
+      code: 1,
+      info: {
+        data,
+        message: "Updated dued contracts"
+      }
+    })
+  })
+    .catch({
+      code: 0,
+      info: {
+        err,
+        message: "Failed"
+      }
+    })
+})
+
+router.post('/getPendingContracts', (req, res) => {
+  let { id, key, page } = req.body;
+  id = Number.parseInt(id);
+  key = Number.parseInt(key);
+  page = Number.parseInt(page);
+  contractModel.getPendingContracts(id, key).then(data => {
+    let count = data.length;
+    data = data.slice(page * 4, page * 4 + 4);
+    res.json({
+      code: 1,
+      info: {
+        total: count,
+        data,
+        message: "Get successfully",
+      }
+    })
+  }).catch(err => {
+    res.json({
+      code: 0,
+      info: {
+        err,
+        message: "Get failed",
+      }
+    })
+  })
+})
+
+router.post('/getExpiredContracts', (req, res) => {
+  let { id, key, page } = req.body;
+  id = Number.parseInt(id);
+  key = Number.parseInt(key);
+  page = Number.parseInt(page);
+  contractModel.getExpiredContracts(id, key).then(data => {
+    let count = data.length;
+    data = data.slice(page * 4, page * 4 + 4);
+    res.json({
+      code: 1,
+      info: {
+        total: count,
+        data,
+        message: "Get successfully",
+      }
+    })
+  }).catch(err => {
+    res.json({
+      code: 0,
+      info: {
+        err,
+        message: "Get failed",
+      }
+    })
+  })
 })
 
 module.exports = router;
