@@ -52,11 +52,11 @@ module.exports = {
     },
     getActiveContracts: (id, key) => {
         if (key === 0) {
-            key = "u1.id";
+            key = "c.id_learner";
         } else {
-            key = "t.id_user";
+            key = "c.id_user";
         }
-        return db.query(`select c.*, u1.name as learner, u1.avatarLink, u2.name as learner, m.name as major_name
+        return db.query(`select c.*, u1.name as learner, u1.avatarLink, u2.name as tutor, m.name as major_name
         from contracts as c, tutors as t, users as u1, users as u2, majors as m
         where c.id_learner = u1.id and c.id_tutor = t.id_user and c.id_tutor = u2.id and c.major = m.id and ${key} = ${id} and c.status = ${1}`);
     },
