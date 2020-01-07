@@ -505,6 +505,66 @@ router.post('/endContract', (req, res) => {
     })
 })
 
+router.post('/payContract', (req, res) => {
+  let { id_contract, rating, complain, feedback } = req.body;
+  contractModel.getContractDetail(id_contract)
+    .then(details => {
+      contractModel.payContract(id_contract, rating, complain, feedback)
+        .then(response => {
+          contractModel.getRating(details[0].id_tutor)
+            .then(avg => {
+              avg = Number.parseFloat(avg[0].avg);
+              userModel.calculateEvaluation(details[0].id_tutor, avg)
+                .then(data => {
+                  res.json({
+                    code: 1,
+                    info: {
+                      data,
+                      message: "Contract ended, evaluation updated",
+                    }
+                  })
+                })
+                .catch(err => {
+                  res.json({
+                    code: 0,
+                    info: {
+                      message: "Failed1 ",
+                      err,
+                    }
+                  })
+                })
+            })
+            .catch(err => {
+              res.json({
+                code: 0,
+                info: {
+                  message: "Failed2 ",
+                  err,
+                }
+              })
+            })
+        })
+        .catch(err => {
+          res.json({
+            code: 0,
+            info: {
+              message: "Failed3 ",
+              err,
+            }
+          })
+        })
+    })
+    .catch(err => {
+      res.json({
+        code: 0,
+        info: {
+          message: "Failed4 ",
+          err,
+        }
+      })
+    })
+})
+
 router.get('/getIncomeReport', (req, res) => {
   let type = req.body.type;
   let id = req.body.id;
@@ -552,25 +612,6 @@ router.get('/getIncomeReport', (req, res) => {
         })
       })
   }
-})
-
-router.put('/dueContracts', (req, res) => {
-  contractModel.dueContracts().then(data => {
-    res.json({
-      code: 1,
-      info: {
-        data,
-        message: "Updated dued contracts"
-      }
-    })
-  })
-    .catch({
-      code: 0,
-      info: {
-        err,
-        message: "Failed"
-      }
-    })
 })
 
 router.post('/getPendingContracts', (req, res) => {

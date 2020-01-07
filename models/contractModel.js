@@ -45,7 +45,18 @@ module.exports = {
         if (month.length === 1) month = "0" + month;
         if (date.length === 1) date = "0" + date;
         var fullDate = year + "-" + month + "-" + date;
-        return db.query(`update contracts set EndDate = '${fullDate}', status = ${2}, rating = ${rating}, complain = '${complain}', feedback = '${feedback}', totalPrice = ceiling((datediff(curdate(), StartDate))/3) * totalPrice where id = ${id_contract} and status != ${2}`)
+        return db.query(`update contracts set EndDate = '${fullDate}', status = ${2}, rating = ${rating}, complain = '${complain}', feedback = '${feedback}', totalPrice = ceiling((datediff(curdate(), StartDate))/3) * totalPrice * 2 where id = ${id_contract} and status != ${2}`)
+    },
+    payContract: (id_contract, rating, complain, feedback) => {
+        let today = new Date();
+        var year, month, date;
+        year = String(today.getFullYear());
+        month = String(today.getMonth() + 1);
+        date = String(today.getDate());
+        if (month.length === 1) month = "0" + month;
+        if (date.length === 1) date = "0" + date;
+        var fullDate = year + "-" + month + "-" + date;
+        return db.query(`update contracts set EndDate = '${fullDate}', status = ${2}, rating = ${rating}, complain = '${complain}', feedback = '${feedback}' where id = ${id_contract} and status = ${3}`)
     },
     complainContract: (id_contract, complain) => {
         return db.query(`update contracts set complain='${complain}' where id = ${id_contract}`);
@@ -87,6 +98,9 @@ module.exports = {
         return db.query(`select * from contracts where status = ${2} and EndDate between curdate() - interval ${days} day and curdate() and id_tutor = ${id}`)
     },
     dueContracts: () => {
-        return db.query(`update constracts set status = ${3} where status = ${1} and datediff(curdate(), estimatedEndDate) >= 0`);
+        return db.query(`update contracts set status = ${3} where status = ${1} and datediff(curdate(), estimatedEndDate) >= 0`);
+    },
+    updatePriceForExpiredContracts: () => {
+        return db.query(`update contracts set totalPrice = ceiling((datediff(estimatedEndDate, StartDate))/3) * totalPrice * 2 where status = ${3}`);
     }
 }

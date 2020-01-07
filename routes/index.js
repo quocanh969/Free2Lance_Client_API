@@ -893,5 +893,35 @@ router.post('/agree', (req, res) => {
     })
 })
 
+router.put('/dueContracts', (req, res) => {
+  contractModel.dueContracts().then(data => {
+    contractModel.updatePriceForExpiredContracts().then(data2 => {
+      res.json({
+        code: 1,
+        info: {
+          data2,
+          message: "Updated dued contracts"
+        }
+      })
+    }).catch(err => {
+      res.json({
+        code: 0,
+        info: {
+          err,
+          message: "Failed"
+        }
+      })
+    })
+  }).catch(err => {
+    res.json({
+      code: 0,
+      info: {
+        err,
+        message: "Failed",
+      }
+    })
+  })
+})
+
 module.exports = router;
 
