@@ -16,8 +16,6 @@ router.get('/', function (req, res, next) {
 
 router.post('/getLearnerDetail', function (req, res, next) {
   var curUser = JSON.stringify(req.user);
-  console.log(curUser);
-  console.log(req.body.id);
   if (JSON.parse(curUser).id === Number.parseInt(req.body.id)) {
     userModel.getLearnerDetail(req.body.id)
       .then(data => {
@@ -667,5 +665,28 @@ router.post('/getExpiredContracts', (req, res) => {
     })
   })
 })
+
+router.post('/getLearnerStudying', function (req, res, next) {
+  var id = JSON.stringify(req.body.id);
+  userModel.getLearnerStudying(id)
+    .then(data => {
+      res.json({
+        code: 1,
+        info: {
+          data,
+          message: "Get successfully"
+        }
+      });
+    }).catch(err => {
+      res.json({
+        code: 0,
+        info: {
+          data: null,
+          message: err,
+        }
+      })
+    })
+  
+});
 
 module.exports = router;

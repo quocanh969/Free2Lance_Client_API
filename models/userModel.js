@@ -99,5 +99,8 @@ module.exports = {
     },
     getTutorCurrentPrice: (id) => {
         return db.query(`select price from tutors where id_user = ${id}`);
+    },
+    getLearnerStudying: (id) => {
+        return db.query(`SELECT u.*  FROM contracts as c, users as u WHERE c.status = 1 AND c.id_learner = u.id and c.id_tutor = ${id}`);
     }
 }

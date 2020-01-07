@@ -90,7 +90,7 @@ module.exports = {
         return db.query(`select c.*, u1.name as learner, u1.avatarLink, u2.name as tutor, m.name as major_name
         from contracts as c, tutors as t, users as u1, users as u2, majors as m
         where c.id_learner = u1.id and c.id_tutor = t.id_user and c.id_tutor = u2.id and c.major = m.id and ${key} = ${id} and c.status = ${0}`);
-    },
+    },    
     getIncomeReport: (id) => {
         return db.query(`select * from contracts where id_tutor = ${id} and status = 2`);
     },
@@ -102,5 +102,5 @@ module.exports = {
     },
     updatePriceForExpiredContracts: () => {
         return db.query(`update contracts set totalPrice = ceiling((datediff(estimatedEndDate, StartDate))/3) * totalPrice * 2 where status = ${3}`);
-    }
+    },
 }
