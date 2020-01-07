@@ -15,8 +15,7 @@ var createConnection = () => {
         host: 'localhost',
         port: '3306',
         user: 'root',
-        //password: '30111998',
-        password: '',
+        password: '30111998',
         database: 'uber_tutor_admin',
         dateStrings: true,
         timezone: 'Z',
@@ -106,8 +105,8 @@ module.exports = {
     addTutor: (user, id) => {
         return new Promise((resolve, reject) => {
             console.log("This is id: " + id);
-            var sql = `INSERT INTO TUTORs(id_user, price, major, levelTeaching, evaluation, successRate, areaCode, area, introduction)
-             VALUES('${id}', ${0}, '${user.major}',${user.levelTeaching}, ${0}, ${0},${0},'','')`;
+            var sql = `INSERT INTO TUTORs(id_user, price, major, levelTeaching, evaluation, areaCode, introduction)
+             VALUES('${id}', ${0}, '${user.major}',${user.levelTeaching}, ${0},${0},'')`;
             var connection = createConnection();
             connection.connect();
             connection.query(sql, (error, results) => {
@@ -138,7 +137,7 @@ module.exports = {
     getTutorDetail: (id) => {
         return new Promise((resolve, reject) => {
             var sql = `select U.id, U.name, U.role, U.address, U.email, U.phone, U.gender, U.yob, U.avatarLink, 
-            T.price, T.levelTeaching, T.major, M.name as major_name , T.evaluation, T.successRate, T.areaCode, A.area, T.introduction
+            T.price, T.levelTeaching, T.major, M.name as major_name , T.evaluation, T.areaCode, A.area, T.introduction
             from users as U, tutors as T, majors as M, areas as A  
             where U.id = T.id_user and T.major = M.id and A.id_area = T.areaCode and 
             U.id = ${id} and U.role = ${1}`;

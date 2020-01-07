@@ -98,9 +98,6 @@ module.exports = {
         return db.query(`select * from contracts where status = ${2} and EndDate between curdate() - interval ${days} day and curdate() and id_tutor = ${id}`)
     },
     dueContracts: () => {
-        return db.query(`update contracts set status = ${3} where status = ${1} and datediff(curdate(), estimatedEndDate) >= 0`);
+        return db.query(`update contracts set status = ${3}, totalPrice = ceiling((datediff(estimatedEndDate, StartDate))/3) * totalPrice * 2 where status = ${1} and datediff(curdate(), estimatedEndDate) >= 0`);
     },
-    updatePriceForExpiredContracts: () => {
-        return db.query(`update contracts set totalPrice = ceiling((datediff(estimatedEndDate, StartDate))/3) * totalPrice * 2 where status = ${3}`);
-    }
 }
