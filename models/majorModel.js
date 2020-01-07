@@ -5,6 +5,6 @@ module.exports = {
         return db.query('SELECT * FROM MAJORs');
     },
     getTop:() => {
-        return db.query('SELECT * FROM MAJORs LIMIT 6');
+        return db.query('SELECT * FROM MAJORs WHERE id != 1 LIMIT 6');
     }
 }
