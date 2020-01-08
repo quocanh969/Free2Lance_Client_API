@@ -958,23 +958,31 @@ router.post('/agree', (req, res) => {
 
 router.put('/dueContracts', (req, res) => {
   contractModel.dueContracts().then(data => {
-
+    contractModel.deleteIngnoredContracts().then(data2 => {
+      res.json({
+        code: 1,
+        info: {
+          data,
+          message: "Updated dued contracts"
+        }
+      })
+    }).catch(err => {
+      res.json({
+        code: 0,
+        info: {
+          message: "Failed",
+          err,
+        }
+      })
+    })
+  }).catch(err => {
     res.json({
-      code: 1,
+      code: 0,
       info: {
-        data,
-        message: "Updated dued contracts"
+        err,
+        message: "Failed"
       }
     })
-      .catch(err => {
-        res.json({
-          code: 0,
-          info: {
-            err,
-            message: "Failed"
-          }
-        })
-      })
   })
 })
 

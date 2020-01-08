@@ -128,4 +128,7 @@ module.exports = {
     dueContracts: () => {
         return db.query(`update contracts set status = ${3}, totalPrice = ceiling((datediff(estimatedEndDate, StartDate))/3) * totalPrice * 2 where status = ${1} and datediff(curdate(), estimatedEndDate) >= 0`);
     },
+    deleteIngnoredContracts: () => {
+        return db.query(`delete from contracts where datediff(curdate(), date(appliedDate)) >= 7 and status = ${0}`);
+    }
 }
