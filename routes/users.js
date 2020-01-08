@@ -351,11 +351,11 @@ router.post('/contractNotice', (req, res) => {
     subject: 'Contract proposal',
     html: `<p>A learner would like to hire you as his/ her tutor.</p>
     <p>Click on the following link to view the contract:</p>
-    <a href='${contractDetail}'>${contractDetail}</a><br/>
-    <p>Do you agree to receive this job</p><br/>
-    <button style="background-color:green;padding:10px;width:150px;border:none;cursor:pointer"><a href='${agreeUrl}' style="color:white;font-size:25px;text-decoration:none">Yes</a></button>
-    <button style="background-color:red;padding:10px;width:150px;border:none;cursor:pointer"><a href='${disagreeUrl}' style="color:white;font-size:25px;text-decoration:none">No</a></button>`,
+    <a href='${contractDetail}'>${contractDetail}</a><br/>`,
   };
+  // <p>Do you agree to receive this job</p><br/>
+  //   <button style="background-color:green;padding:10px;width:150px;border:none;cursor:pointer"><a href='${agreeUrl}' style="color:white;font-size:25px;text-decoration:none">Yes</a></button>
+  //   <button style="background-color:red;padding:10px;width:150px;border:none;cursor:pointer"><a href='${disagreeUrl}' style="color:white;font-size:25px;text-decoration:none">No</a></button>
   transporter.sendMail(mailOptions, (err, response) => {
     if (err) {
       res.json({ message: 'Notification sent failed', code: 0 });
