@@ -686,7 +686,7 @@ router.post('/getLearnerStudying', function (req, res, next) {
         }
       })
     })
-  
+
 });
 
 router.post('/getStatisticByYear', (req, res) => {
@@ -694,6 +694,31 @@ router.post('/getStatisticByYear', (req, res) => {
   year = Number.parseInt(year);
   id_tutor = Number.parseInt(id_tutor);
   contractModel.getYearlyIncome(id_tutor, year).then(data => {
+    res.json({
+      code: 1,
+      info: {
+        message: "Read successfully",
+        data,
+      }
+    })
+  }).catch(err => {
+    res.json({
+      code: 0,
+      info: {
+        err,
+        message: "Read failed",
+      }
+    })
+  })
+})
+
+router.post('/getStatisticByMonth', (req, res) => {
+  let { id_tutor, year, month } = req.body;
+  year = Number.parseInt(year);
+  id_tutor = Number.parseInt(id_tutor);
+  month = Number.parseInt(month);
+  
+  contractModel.getIncomeByMonth(id_tutor, year, month).then(data => {
     res.json({
       code: 1,
       info: {

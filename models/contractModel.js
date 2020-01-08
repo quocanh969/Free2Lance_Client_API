@@ -122,6 +122,9 @@ module.exports = {
       GROUP BY Month.idMonth order by idMonth
         `);
     },
+    getIncomeByMonth: (id_tutor, year, month) => {
+        return db.query(`select c.totalPrice, c.EndDate  from contracts as c where year(c.EndDate) = ${year} and month(c.EndDate) = ${month} and c.id_tutor = ${id_tutor} and status = 2`);
+    },
     dueContracts: () => {
         return db.query(`update contracts set status = ${3}, totalPrice = ceiling((datediff(estimatedEndDate, StartDate))/3) * totalPrice * 2 where status = ${1} and datediff(curdate(), estimatedEndDate) >= 0`);
     },
