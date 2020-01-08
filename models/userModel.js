@@ -3,20 +3,20 @@ var db = require('../utils/db');
 module.exports = {
     getAll: (key, value) => {
         if (key)
-            return db.query(`SELECT * FROM USERs WHERE ${key} LIKE ${value} and status= ${true}`);
-        return db.query(`SELECT * FROM USERs WHERE status=${true}`);
+            return db.query(`SELECT * FROM users WHERE ${key} LIKE ${value} and status= ${true}`);
+        return db.query(`SELECT * FROM users WHERE status=${true}`);
     },
     getByEmail: (email, status) => {
         if (status === null)
-            return db.query(`SELECT * FROM USERs WHERE email = '${email}' and status = ${true}`);
+            return db.query(`SELECT * FROM users WHERE email = '${email}' and status = ${true}`);
         else
-            return db.query(`SELECT * FROM USERs WHERE email = '${email}' and status= ${status}`);
+            return db.query(`SELECT * FROM users WHERE email = '${email}' and status= ${status}`);
     },
     getByFacebookId: id => {
-        return db.query(`SELECT * FROM USERs WHERE accType = 1 AND id_social = '${id}' and status=${true}`);
+        return db.query(`SELECT * FROM users WHERE accType = 1 AND id_social = '${id}' and status=${true}`);
     },
     getByGoogleId: id => {
-        return db.query(`SELECT * FROM USERs WHERE accType = 2 AND id_social = '${id}' and status=${true}`);
+        return db.query(`SELECT * FROM users WHERE accType = 2 AND id_social = '${id}' and status=${true}`);
     },
     register: user => {
         return db.add(user);
