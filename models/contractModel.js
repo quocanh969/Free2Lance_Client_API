@@ -103,7 +103,7 @@ module.exports = {
         idMonth,
         MONTHNAME(STR_TO_DATE(idMonth, '%m')) as m,
         IFNULL(sum(contracts.totalPrice), 0) as total
-      FROM Contracts
+      FROM contracts
       RIGHT JOIN (
         SELECT 1 as idMonth
         UNION SELECT 2 as idMonth

@@ -563,7 +563,7 @@ router.post('/payContract', (req, res) => {
     })
 })
 
-router.get('/getIncomeReport', (req, res) => {
+router.post('/getIncomeReport', (req, res) => {
   let type = req.body.type;
   let id = req.body.id;
   type = Number.parseInt(type);
