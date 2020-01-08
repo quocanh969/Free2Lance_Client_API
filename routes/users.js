@@ -694,11 +694,35 @@ router.post('/getStatisticByYear', (req, res) => {
   year = Number.parseInt(year);
   id_tutor = Number.parseInt(id_tutor);
   contractModel.getYearlyIncome(id_tutor, year).then(data => {
+    let arr = new Array(12);
+    for (let i = 0; i < 12; i++) {
+      let monthName = '';
+      switch(data[i].idMonth + 1){
+        case 1: monthName = "January"; break;
+        case 2: monthName = "February"; break;
+        case 3: monthName = "March"; break;
+        case 4: monthName = "April"; break;
+        case 5: monthName = "May"; break;
+        case 6: monthName = "June"; break;
+        case 7: monthName = "July"; break;
+        case 8: monthName = "August"; break;
+        case 9: monthName = "September"; break;
+        case 10: monthName = "October"; break;
+        case 11: monthName = "November"; break;
+        case 12: monthName = "December"; break;
+        default: break;
+      }
+      arr[i] = {
+        idMonth: data[i].idMonth,
+        monthName: monthName,
+        total: data[i].total
+      }
+    }
     res.json({
       code: 1,
       info: {
         message: "Read successfully",
-        data,
+        data: arr,
       }
     })
   }).catch(err => {

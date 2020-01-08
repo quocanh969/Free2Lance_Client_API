@@ -101,7 +101,6 @@ module.exports = {
         return db.query(`
         SELECT
         idMonth,
-        MONTHNAME(STR_TO_DATE(idMonth, '%m')) as m,
         IFNULL(sum(contracts.totalPrice), 0) as total
       FROM contracts
       RIGHT JOIN (
