@@ -341,9 +341,9 @@ router.post('/contractNotice', (req, res) => {
       pass: `${EMAIL_PASSWORD}`,
     },
   });
-  var contractDetail = `http://localhost:3000/contract-details/id=${id_contract}`;
-  var agreeUrl = `http://localhost:3000/replyContract/id=${id_contract}&reply=${1}`;
-  var disagreeUrl = `http://localhost:3000/replyContract/id=${id_contract}&reply=${0}`;
+  var contractDetail = `https://ut-1612018-1612175-sv-client.herokuapp.com/contract-details/id=${id_contract}`;
+  var agreeUrl = `https://ut-1612018-1612175-sv-client.herokuapp.com/replyContract/id=${id_contract}&reply=${1}`;
+  var disagreeUrl = `https://ut-1612018-1612175-sv-client.herokuapp.com/replyContract/id=${id_contract}&reply=${0}`;
 
   const mailOptions = {
     from: EMAIL_USERNAME,
