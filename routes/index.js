@@ -285,7 +285,7 @@ router.post('/register-student', (req, res) => {
                 'You are receiving this because you (or someone else) have signed up to our website.\n\n'
                 + 'Please click on the following link, or paste this into your browser to complete the process:\n\n'
 
-                + `https://ut-1612018-1612175-sv-client.herokuapp.com/activate-account/id=${data.insertId}\n\n`
+                + `https://ut-1612018-1612175-client.netlify.com/activate-account/id=${data.insertId}\n\n`
 
                 + 'If you did not request this, please ignore this email and your account will not be activate.\n',
             };
@@ -339,7 +339,7 @@ router.post('/register-tutor', (req, res) => {
                     'You are receiving this because you (or someone else) have signed up to our website.\n\n'
                     + 'Please click on the following link, or paste this into your browser to complete the process:\n\n'
 
-                    + `https://ut-1612018-1612175-sv-client.herokuapp.com/activate-account/id=${responseData.insertId}\n\n`
+                    + `https://ut-1612018-1612175-client.netlify.com/activate-account/id=${responseData.insertId}\n\n`
 
                     + 'If you did not request this, please ignore this email and your account will not be activate.\n',
                 };
@@ -442,7 +442,7 @@ router.post('/recoverPassword', (req, res) => {
             pass: `${EMAIL_PASSWORD}`,
           },
         });
-        var url = `https://ut-1612018-1612175-sv-client.herokuapp.com/recover-password/token=${token}&id=${user[0].id}`;
+        var url = `https://ut-1612018-1612175-client.netlify.com/recover-password/token=${token}&id=${user[0].id}`;
         const mailOptions = {
           from: EMAIL_USERNAME,
           to: `${user[0].email}`,
@@ -451,7 +451,7 @@ router.post('/recoverPassword', (req, res) => {
             'You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n'
             + 'Please click on the following link, or paste this into your browser to complete the process within one hour of receiving it:\n\n'
 
-            + `https://ut-1612018-1612175-sv-client.herokuapp.com/recover-password/token=${token}&id=${user[0].id}\n\n`,
+            + `https://ut-1612018-1612175-client.netlify.com/recover-password/token=${token}&id=${user[0].id}\n\n`,
         };
         transporter.sendMail(mailOptions, (err, response) => {
           if (err) {
